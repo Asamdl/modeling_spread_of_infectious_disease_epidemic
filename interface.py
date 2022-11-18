@@ -1,11 +1,38 @@
 from PyQt5 import QtGui
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QWidget, QHBoxLayout, QVBoxLayout, QPushButton, \
-    QLineEdit, QRadioButton, QStackedWidget, QGridLayout
+    QLineEdit, QRadioButton, QStackedWidget, QGridLayout, QProgressBar, QSlider
 import sys
 from PyQt5.QtGui import QPainter, QBrush, QPen, QColor
 from PyQt5.QtCore import Qt, QObject, QEvent
 from PyQt5.uic import loadUi
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+import random
+import matplotlib.pyplot as plt
 
+class Widget_Plt(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.show()
+        self.figure = plt.figure()
+        self.canvas = FigureCanvas(self.figure)
+        self.toolbar = NavigationToolbar(self.canvas, self, coordinates=False)#I've been looking for you for too long to just leave you here unmarked
+        self.button = QPushButton('Plot')
+        self.button.clicked.connect(self.plot)
+        layout = QVBoxLayout()
+        layout.addWidget(self.toolbar)
+        layout.addWidget(self.canvas)
+        layout.addWidget(self.button)
+
+        self.setLayout(layout)
+
+    # action called by the push button
+    def plot(self):
+        data = [random.random() for i in range(10)]
+        self.figure.clear()
+        ax = self.figure.add_subplot(111)
+        ax.plot(data, '*-')
+        self.canvas.draw()
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -57,20 +84,20 @@ class Filter(QObject):
         return False
 
 
+class LocationParameter():
+    def __init__(self, x_axis, y_axis, margin_x_from_el, margin_y_from_el):
+        self.x_axis = 0.1
+        self.y_axis = 0.1
+        self.margin_x_from_el = 0.1
+        self.margin_y_from_el = 0.1
+
+
 class box(QWidget):
     def __init__(self, top=None, left=None, width=None, height=None):
         super().__init__()
-        self.title = "PyQt5 Drawing Tutorial"
-        # self.top = 150
-        # self.left = 150
-        # self.width = 500
-        # self.height = 500
-
         self.InitWindow()
 
     def InitWindow(self):
-        self.setWindowTitle(self.title)
-        # self.setGeometry(self.top, self.left, self.width, self.height)
         self.show()
 
     def keyPressEvent(self, e):
@@ -82,13 +109,34 @@ class box(QWidget):
             # s = e.pos()
             print(e.x(), e.y())
 
-    def paintEvent(self, event):
+    def paintEvent(self, event=None, changing_number=None):
+        print(event)
         painter = QPainter(self)
         painter.setPen(QPen(Qt.green, 8, Qt.SolidLine))
         painter.setBrush(QBrush(Qt.red, Qt.CrossPattern))
         w = self.geometry().width()
         h = self.geometry().height()
-        painter.drawRect((int)(w * 10 / 100), (int)(h * 10 / 100), (int)(w * 80 / 100), (int)(h * 80 / 100))
+        #params = self.get_parameters_for_rectangles()
+        #for param in params:
+        painter.drawRect(0, 0, w, h)
+
+    def get_parameters_for_rectangles(self):
+        w = self.geometry().width()
+        h = self.geometry().height()
+        result = []
+        data = self.zone_location_parameters
+        coef = 1 / self.number_of_zones
+        for i in range(self.number_of_zones):
+            if i != self.number_of_zones - 1:
+                result.append(
+                    [int(w * data.x_axis / 100), int(h * data.y_axis / 100), int(w * (100 - 2 * data.x_axis) / 100),
+                     int(h * (100 - 2 * data.y_axis) / 100)])
+            else:
+                result.append(
+                    [int(coef * w * data.x_axis),
+                     int(coef)]
+                )
+        return result
 
 
 class Window(QWidget):
@@ -100,7 +148,11 @@ class Window(QWidget):
         self.width = 500
         self.height = 500
 
+
+
         grid = QGridLayout()
+        #grid.setRowStretch(10,10)
+        #grid.setColumnStretch(10,10)
         self.setLayout(grid)
 
         names = ['Cls', 'Bck',
@@ -109,9 +161,33 @@ class Window(QWidget):
         positions = [(i, j) for i in range(2) for j in range(2)]
         for position, name in zip(positions, names):
             if position[0] == 0 and position[1] == 0:
-                widget = WidgetZone()
-                #widget = box()
-                grid.addWidget(widget, *position)
+                buttons_lay = QHBoxLayout()
+                button_zone_increment = QPushButton("+")
+                #button_zone_increment.clicked.connect(self.add_zone)
+                buttons_lay.addWidget(button_zone_increment)
+                buttons_lay.addWidget(QPushButton("-"))
+                lay00 = QVBoxLayout()
+                lay00.addLayout(buttons_lay)
+                #grid.addLayout(buttons_lay,*position)
+                # widget = box()
+                #grid.addWidget(widget, *position)
+                lay_ = QGridLayout()
+                for x in range(2):
+                    for y in range(2):
+                        widget = box()
+                        lay_.addWidget(widget, x, y)
+                lay00.addLayout(lay_)
+                grid.addLayout(lay00, *position)
+            elif position[0] == 0 and position[1] == 1:
+                plotlib = Widget_Plt()
+                lay_ = QVBoxLayout()
+                lay_.addWidget(plotlib)
+                grid.addLayout(lay_, *position)
+            elif position[0] == 1 and position[1] == 1:
+                plotlib = Widget_Plt()
+                lay_ = QVBoxLayout()
+                lay_.addWidget(plotlib)
+                grid.addLayout(lay_, *position)
             else:
                 # label = QLabel(name)
                 widget = Widget1()
@@ -130,19 +206,17 @@ def main():
     window = Window()
     sys.exit(app.exec_())
 
-number_of_zones = 1
+
 class WidgetZone(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, name=None,parent=None):
         QWidget.__init__(self, parent=parent)
         lay = QVBoxLayout(self)
-        buttons_lay = QHBoxLayout()
-        buttons_lay.addWidget(QPushButton("+"))
-        buttons_lay.addWidget(QPushButton("-"))
-        lay.addLayout(buttons_lay)
-        qwidgetzone = box()
-        #label = QLabel("Body")
-        #label.setStyleSheet('QLabel {background-color: #A3C1DA; color: red;}')
-        lay.addWidget(qwidgetzone)
+        self.q_widget_zone = box()
+        self.name = name
+        lay.addWidget(self.q_widget_zone)
+
+    def add_zone(self):
+        self.q_widget_zone.paintEvent(f"{self.name}")
 
 
 class Widget1(QWidget):
