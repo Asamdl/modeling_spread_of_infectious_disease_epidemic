@@ -130,46 +130,38 @@ class Widget1(QWidget):
 class WidgetCreatingModel(QWidget):
     def __init__(self, parent=None):
         QWidget.__init__(self, parent=parent)
-        #self.setAttribute(QtCore.Qt.WA_StyledBackground, True)
-        #self.setStyleSheet("border: 1px solid black;")
-
         self.stages_names = ["S", "I", "E", "R", "D", "`S"]
         self.name_of_inactive_stages = ["S", "I"]
         self.checkbox_states = dict()
-        self.stages_widges = dict()
-        ley = QVBoxLayout(self)
+        self.stages_widgets = dict()
+        lay = QVBoxLayout(self)
         label_widget = QLabel("Сreating a model")
-        ley.addWidget(label_widget)
-        for stage_name in self.stages_names:
+        lay.addWidget(label_widget)
+        lay_stages = QGridLayout()
+        positions = [
+            (0, 0), (0, 1),
+            (1, 0), (1, 1),
+            (2, 0), (2, 1)
+        ]
+        for stage_name,position in zip(self.stages_names,positions):
             widget_check_box = QCheckBox(stage_name, self)
             widget_check_box.stateChanged.connect(self.update_info_about_status_of_checkboxes)
-            ley.addWidget(widget_check_box)
+            lay_stages.addWidget(widget_check_box,*position)
             if stage_name in self.name_of_inactive_stages:
                 widget_check_box.setEnabled(False)
                 widget_check_box.toggle()
                 self.checkbox_states[stage_name] = True
             else:
                 self.checkbox_states[stage_name] = False
-
-            self.stages_widges[stage_name] = widget_check_box
+            self.stages_widgets[stage_name] = widget_check_box
+        lay.addLayout(lay_stages)
         self.btn = QPushButton("apply")
         self.btn.clicked.connect(self.show_info_about_status_of_checkboxes)
-        ley.setAlignment(Qt.AlignCenter)
-
-
-        #self.btn.setStyleSheet("color:white")
-        #self.btn.setStyleSheet("background-color:green")
-
-        # frame = QFrame(self)
-        # frame.setFrameShape(QFrame.StyledPanel)
-        # frame.setLineWidth((float)(0.6))
-        #
-        # ley.addWidget(frame)
-        ley.addWidget(self.btn)
-
+        lay.setAlignment(Qt.AlignCenter)
+        lay.addWidget(self.btn)
 
     def update_info_about_status_of_checkboxes(self, state):
-        for stage_name, stage_widget in self.stages_widges.items():
+        for stage_name, stage_widget in self.stages_widgets.items():
             self.checkbox_states[stage_name] = True if stage_widget.checkState() == Qt.Checked else False
 
     def show_info_about_status_of_checkboxes(self):
