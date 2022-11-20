@@ -12,6 +12,8 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import random
 import matplotlib.pyplot as plt
 
+from Widgets.WZoneConstructor import WZoneConstructor
+
 
 class WidgetPlt(QWidget):
     def __init__(self):
@@ -39,8 +41,10 @@ class WidgetPlt(QWidget):
 
 
 class box(QWidget):
-    def __init__(self, top=None, left=None, width=None, height=None):
+    def __init__(self,name:str, top=None, left=None, width=None, height=None):
         super().__init__()
+        self.name = name
+        self.colors = [Qt.red,Qt.black,Qt.white,Qt.yellow]
         self.InitWindow()
 
     def InitWindow(self):
@@ -51,15 +55,18 @@ class box(QWidget):
             self.close()
 
     def mousePressEvent(self, e):
-        if e.buttons() == Qt.RightButton:
+        if e.buttons() == Qt.LeftButton:
             # s = e.pos()
+            print(self.name)
             print(e.x(), e.y())
 
     def paintEvent(self, event=None, changing_number=None):
-        print(event)
+
         painter = QPainter(self)
         painter.setPen(QPen(Qt.black, 2, Qt.SolidLine))
-        painter.setBrush(QBrush(Qt.green, Qt.CrossPattern))
+        color = random.choice(self.colors)
+        print(color)
+        painter.setBrush(QBrush(color, Qt.CrossPattern))
         w = self.geometry().width()
         h = self.geometry().height()
         painter.drawRect(0, 0, w, h)
@@ -92,12 +99,15 @@ class Window(QWidget):
                 lay00 = QVBoxLayout()
                 lay00.addLayout(buttons_lay)
                 lay_ = QGridLayout()
-                for x in range(2):
-                    for y in range(2):
-                        widget = box()
-                        lay_.addWidget(widget, x, y)
+                self.boxes = []
+                lay_.addWidget(WZoneConstructor())
+
+
+
+
                 lay00.addLayout(lay_)
                 slider = QSlider(Qt.Horizontal)
+                slider.valueChanged.connect(self.update_color_for_zones)
                 lay00.addWidget(slider)
                 grid.addLayout(lay00, *position)
             elif position[0] == 0 and position[1] == 2:
@@ -119,6 +129,9 @@ class Window(QWidget):
     def InitWindow(self):
         self.setWindowTitle(self.title)
         self.setGeometry(self.top, self.left, self.width, self.height)
+    def update_color_for_zones(self):
+        for box in self.boxes:
+            box.repaint()
 
 
 class Widget1(QWidget):
