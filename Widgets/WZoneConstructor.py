@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QWidget, QHBoxLay
 
 from Widgets.WAddZone import WAddZone
 from Widgets.WZone import Zone
+from functools import partial
 
 
 class WZoneConstructor(QWidget):
@@ -23,11 +24,14 @@ class WZoneConstructor(QWidget):
         for i in range(self.number_of_zones):
             self.zones.append(Zone(name=i))
 
+    def update_name_zones(self):
+        for i in range(self.number_of_zones):
+            self.zones[i].set_name(str(i))
+
     def set_del_func_for_zone(self):
-        for zone in self.zones:
-            name = zone.name
+        for i in range(self.number_of_zones):
             # на этом этапе индексы правильные но при нажатии на кнопку всегда индекс равен 3 ХМ
-            zone.btn_del.clicked.connect(lambda: self.action_del_zone(name))
+            self.zones[i].btn_del.clicked.connect(partial(self.action_del_zone, index=i))
 
     def show_zones(self):
         if self.number_of_zones > 0:
@@ -68,6 +72,7 @@ class WZoneConstructor(QWidget):
     def action_del_zone(self, index):
         if self.number_of_zones > 0:
             self.del_zone(index)
+            self.update_name_zones()
             self.set_del_func_for_zone()
             self.clear_grid()
             self.show_zones()
