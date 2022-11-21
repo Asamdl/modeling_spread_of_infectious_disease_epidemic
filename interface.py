@@ -12,7 +12,8 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import random
 import matplotlib.pyplot as plt
 
-from Widgets.WPlt import WPlt
+
+from Widgets.WPltBig import WPltBig
 from Widgets.WZoneConstructor import WZoneConstructor
 
 
@@ -82,9 +83,10 @@ class Window(QWidget):
                 lay00.addWidget(slider)
                 grid.addLayout(lay00, *position)
             elif position[0] == 0 and position[1] == 2:
-                plotlib = WPlt()
+                plotlib = WPltBig()
                 lay_ = QVBoxLayout()
                 lay_.addWidget(plotlib)
+                #grid.addLayout(lay_, 0,2)
                 grid.addLayout(lay_, 0,2,1,75)
             elif position[0] == 1 and position[1] == 1:
                 lay_ = QVBoxLayout()
