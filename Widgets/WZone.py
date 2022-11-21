@@ -3,6 +3,9 @@ from Widgets.WPainter import WPainter
 import uuid
 
 
+from Widgets.WPltLittle import WPltLittle
+
+
 class WZone(QWidget):
     def __init__(self, name):
         super().__init__()
@@ -15,7 +18,8 @@ class WZone(QWidget):
         self.btn_del = QPushButton("del")
         lay_.addWidget(self.btn_del)
         self.lay.addLayout(lay_)
-        self.lay.addWidget(WPainter())
+        #self.lay.addWidget(WPainter())
+        self.lay.addWidget(WPltLittle())
 
     def set_name(self, name):
         self.name = str(name)

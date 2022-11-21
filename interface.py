@@ -12,39 +12,17 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import random
 import matplotlib.pyplot as plt
 
+
+from Widgets.WPltBig import WPltBig
 from Widgets.WZoneConstructor import WZoneConstructor
 
 
-class WidgetPlt(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.show()
-        self.figure = plt.figure()
-        self.canvas = FigureCanvas(self.figure)
-        # I've been looking for you for too long to just leave you here unmarked
-        self.toolbar = NavigationToolbar(self.canvas, self,
-                                         coordinates=False)
-        self.button = QPushButton('Plot')
-        self.button.clicked.connect(self.plot)
-        layout = QVBoxLayout()
-        layout.addWidget(self.toolbar)
-        layout.addWidget(self.canvas)
-        layout.addWidget(self.button)
-        self.setLayout(layout)
-
-    def plot(self):
-        data = [random.random() for i in range(10)]
-        self.figure.clear()
-        ax = self.figure.add_subplot(111)
-        ax.plot(data, '*-')
-        self.canvas.draw()
-
 
 class box(QWidget):
-    def __init__(self,name:str, top=None, left=None, width=None, height=None):
+    def __init__(self, name: str, top=None, left=None, width=None, height=None):
         super().__init__()
         self.name = name
-        self.colors = [Qt.red,Qt.black,Qt.white,Qt.yellow]
+        self.colors = [Qt.red, Qt.black, Qt.white, Qt.yellow]
         self.InitWindow()
 
     def InitWindow(self):
@@ -92,18 +70,12 @@ class Window(QWidget):
         # row: int, column: int, rowSpan: int, columnSpan: int
         for position in positions:
             if position[0] == 0 and position[1] == 0:
-                buttons_lay = QHBoxLayout()
-                button_zone_increment = QPushButton("+")
-                buttons_lay.addWidget(button_zone_increment)
-                buttons_lay.addWidget(QPushButton("-"))
                 lay00 = QVBoxLayout()
-                lay00.addLayout(buttons_lay)
                 lay_ = QGridLayout()
-                self.boxes = []
-                lay_.addWidget(WZoneConstructor())
-
-
-
+                label = QLabel("Создание зон")
+                label.setAlignment(QtCore.Qt.AlignCenter)
+                lay_.addWidget(label, 0, 0)
+                lay_.addWidget(WZoneConstructor(), 1, 0, 100, 1)
 
                 lay00.addLayout(lay_)
                 slider = QSlider(Qt.Horizontal)
@@ -111,10 +83,11 @@ class Window(QWidget):
                 lay00.addWidget(slider)
                 grid.addLayout(lay00, *position)
             elif position[0] == 0 and position[1] == 2:
-                plotlib = WidgetPlt()
+                plotlib = WPltBig()
                 lay_ = QVBoxLayout()
                 lay_.addWidget(plotlib)
-                grid.addLayout(lay_, *position)
+                #grid.addLayout(lay_, 0,2)
+                grid.addLayout(lay_, 0,2,1,75)
             elif position[0] == 1 and position[1] == 1:
                 lay_ = QVBoxLayout()
                 lay_.addWidget(WidgetCreatingModel())
@@ -129,9 +102,9 @@ class Window(QWidget):
     def InitWindow(self):
         self.setWindowTitle(self.title)
         self.setGeometry(self.top, self.left, self.width, self.height)
+
     def update_color_for_zones(self):
-        for box in self.boxes:
-            box.repaint()
+        pass
 
 
 class Widget1(QWidget):
@@ -141,10 +114,13 @@ class Widget1(QWidget):
         for i in range(4):
             lay.addWidget(QPushButton("{}".format(i)))
 
+
 class widget(QWidget):
     def __init__(self, parent=None):
         QWidget.__init__(self, parent=parent)
         uic.loadUi('test_element.ui', self)
+
+
 class WidgetSetModelParameters(QWidget):
     def __init__(self, checkbox_states: typing.Dict[str, bool], parent=None):
         QWidget.__init__(self, parent=parent)
@@ -152,17 +128,17 @@ class WidgetSetModelParameters(QWidget):
 
         for name, value in checkbox_states.items():
             if value:
-                #I'm so tired of doing this
-                #Unfinished
+                # I'm so tired of doing this
+                # Unfinished
                 lay = QHBoxLayout()
                 label = QLabel(name)
-                #label.setAlignment(QtCore.Qt.AlignLeft)
-                sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred , QtWidgets.QSizePolicy.Fixed)
+                # label.setAlignment(QtCore.Qt.AlignLeft)
+                sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
 
                 lay.addWidget(label)
                 line_edit = QLineEdit()
                 line_edit.setSizePolicy(sizePolicy)
-                #line_edit.setAlignment(QtCore.Qt.AlignLeft)
+                # line_edit.setAlignment(QtCore.Qt.AlignLeft)
                 # line_edit.resize(70, 20)
                 # line_edit.setMaximumSize(QtCore.QSize(16777215, 25))
                 line_edit.setFixedWidth(70)
@@ -215,7 +191,7 @@ class WidgetCreatingModel(QWidget):
         layout_child_1_2.addWidget(QLabel("Устанвка значений"))
         self.widget_m = WidgetSetModelParameters(self.checkbox_states)
         self.lay_m = QGridLayout()
-        self.lay_m.addWidget(self.widget_m,0,0)
+        self.lay_m.addWidget(self.widget_m, 0, 0)
         layout_child_1_2.addLayout(self.lay_m)
         layout_child_1_2.addWidget(QPushButton("apply"))
 
@@ -230,11 +206,11 @@ class WidgetCreatingModel(QWidget):
         for name, state in self.checkbox_states.items():
             print(f"{name} = {state}")
         print()
-        #self.lay_m.deleteLater()
+        # self.lay_m.deleteLater()
         self.lay_m.removeWidget(self.widget_m)
-        #self.widget_m.deleteLater()
+        # self.widget_m.deleteLater()
         self.widget_m = WidgetSetModelParameters(self.checkbox_states)
-        self.lay_m.addWidget(self.widget_m,0,0)
+        self.lay_m.addWidget(self.widget_m, 0, 0)
 
 
 def main():
