@@ -2,6 +2,8 @@ from PyQt5.QtWidgets import QLabel, QWidget, QHBoxLayout, QVBoxLayout, QPushButt
 from Widgets.WPainter import WPainter
 import uuid
 
+from Widgets.WPlt import WPlt
+
 
 class WZone(QWidget):
     def __init__(self, name):
@@ -15,7 +17,8 @@ class WZone(QWidget):
         self.btn_del = QPushButton("del")
         lay_.addWidget(self.btn_del)
         self.lay.addLayout(lay_)
-        self.lay.addWidget(WPainter())
+        #self.lay.addWidget(WPainter())
+        self.lay.addWidget(WPlt())
 
     def set_name(self, name):
         self.name = str(name)
