@@ -12,10 +12,8 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import random
 import matplotlib.pyplot as plt
 
-
 from Widgets.WPltBig import WPltBig
 from Widgets.WZoneConstructor import WZoneConstructor
-
 
 
 class box(QWidget):
@@ -86,8 +84,8 @@ class Window(QWidget):
                 plotlib = WPltBig()
                 lay_ = QVBoxLayout()
                 lay_.addWidget(plotlib)
-                #grid.addLayout(lay_, 0,2)
-                grid.addLayout(lay_, 0,2,1,75)
+                # grid.addLayout(lay_, 0,2)
+                grid.addLayout(lay_, 0, 2, 1, 75)
             elif position[0] == 1 and position[1] == 1:
                 lay_ = QVBoxLayout()
                 lay_.addWidget(WidgetCreatingModel())
@@ -124,28 +122,49 @@ class widget(QWidget):
 class WidgetSetModelParameters(QWidget):
     def __init__(self, checkbox_states: typing.Dict[str, bool], parent=None):
         QWidget.__init__(self, parent=parent)
-        layout = QVBoxLayout(self)
-
+        layout = QGridLayout(self)
+        positions = []
+        for i in range(len(checkbox_states)):
+            positions.append([i if i % 2 == 0 else i - 1, 0 if i % 2 == 0 else 2])
+            positions.append([i if i % 2 == 0 else i - 1, 1 if i % 2 == 0 else 3])
+        num_ = 0
         for name, value in checkbox_states.items():
             if value:
-                # I'm so tired of doing this
-                # Unfinished
-                lay = QHBoxLayout()
                 label = QLabel(name)
-                # label.setAlignment(QtCore.Qt.AlignLeft)
+                label.setAlignment(QtCore.Qt.AlignCenter)
                 sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
-
-                lay.addWidget(label)
+                layout.addWidget(label, *positions[num_])
                 line_edit = QLineEdit()
+                # label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
                 line_edit.setSizePolicy(sizePolicy)
-                # line_edit.setAlignment(QtCore.Qt.AlignLeft)
-                # line_edit.resize(70, 20)
-                # line_edit.setMaximumSize(QtCore.QSize(16777215, 25))
-                line_edit.setFixedWidth(70)
-                # line_edit.setMaxLength(5)
-                # line_edit.setDisabled(True)
-                lay.addWidget(line_edit)
-                layout.addLayout(lay)
+                line_edit.setFixedWidth(50)
+                layout.addWidget(line_edit,  *positions[num_+1])
+
+                num_+=2
+                # lay.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+
+        # for name, value in checkbox_states.items():
+        #     if value:
+        #         # I'm so tired of doing this
+        #         # Unfinished
+        #         lay = QHBoxLayout()
+        #         label = QLabel(name)
+        #         # label.setAlignment(QtCore.Qt.AlignLeft)
+        #         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
+        #
+        #         lay.addWidget(label)
+        #         line_edit = QLineEdit()
+        #         label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        #         line_edit.setSizePolicy(sizePolicy)
+        #         # line_edit.setAlignment(QtCore.Qt.AlignLeft)
+        #         # line_edit.resize(70, 20)
+        #         # line_edit.setMaximumSize(QtCore.QSize(16777215, 25))
+        #         line_edit.setFixedWidth(50)
+        #         # line_edit.setMaxLength(5)
+        #         # line_edit.setDisabled(True)
+        #         lay.addWidget(line_edit)
+        #        # lay.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        #         layout.addLayout(lay)
 
 
 class WidgetCreatingModel(QWidget):
@@ -188,7 +207,9 @@ class WidgetCreatingModel(QWidget):
         layout_child_1.addLayout(layout_child_1_1)
 
         layout_child_1_2 = QVBoxLayout()
-        layout_child_1_2.addWidget(QLabel("Устанвка значений"))
+        label_set_value = QLabel("Устанвка значений")
+        label_set_value.setAlignment(QtCore.Qt.AlignCenter)
+        layout_child_1_2.addWidget(label_set_value)
         self.widget_m = WidgetSetModelParameters(self.checkbox_states)
         self.lay_m = QGridLayout()
         self.lay_m.addWidget(self.widget_m, 0, 0)

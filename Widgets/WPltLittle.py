@@ -19,7 +19,7 @@ class WPltLittle(QWidget):
 
         self.button.clicked.connect(self.plot)
         layout = QVBoxLayout()
-        layout.addWidget(self.toolbar)
+        #layout.addWidget(self.toolbar)
         layout.addWidget(self.canvas)
         layout.addWidget(self.button)
         self.setLayout(layout)
