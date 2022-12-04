@@ -2,7 +2,7 @@ import typing
 
 from PyQt5 import QtGui, QtCore, QtWidgets, uic
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QWidget, QHBoxLayout, QVBoxLayout, QPushButton, \
-    QLineEdit, QRadioButton, QStackedWidget, QGridLayout, QProgressBar, QSlider, QCheckBox, QFrame
+    QLineEdit, QRadioButton, QStackedWidget, QGridLayout, QProgressBar, QSlider, QCheckBox, QFrame, QScrollArea
 import sys
 from PyQt5.QtGui import QPainter, QBrush, QPen, QColor
 from PyQt5.QtCore import Qt, QObject, QEvent
@@ -12,7 +12,10 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import random
 import matplotlib.pyplot as plt
 
+from Widgets.WAddZone import WAddZone
+from Widgets.WListZone import WListZone
 from Widgets.WPltBig import WPltBig
+from Widgets.WPltLittle import WPltLittle
 from Widgets.WZoneConstructor import WZoneConstructor
 
 
@@ -69,23 +72,28 @@ class Window(QWidget):
         for position in positions:
             if position[0] == 0 and position[1] == 0:
                 lay00 = QVBoxLayout()
+                lay00.addStretch()
                 lay_ = QGridLayout()
                 label = QLabel("Создание зон")
                 label.setAlignment(QtCore.Qt.AlignCenter)
-                lay_.addWidget(label, 0, 0)
-                lay_.addWidget(WZoneConstructor(), 1, 0, 100, 1)
+                lay00.addWidget(label)
+                lay00.addWidget(WListZone())
 
-                lay00.addLayout(lay_)
+
+                lay00.addStretch()
                 slider = QSlider(Qt.Horizontal)
                 slider.valueChanged.connect(self.update_color_for_zones)
+                lay00.setAlignment(Qt.AlignmentFlag.AlignTop)
                 lay00.addWidget(slider)
+
+                grid.setAlignment(Qt.AlignmentFlag.AlignTop)
                 grid.addLayout(lay00, *position)
             elif position[0] == 0 and position[1] == 2:
                 plotlib = WPltBig()
                 lay_ = QVBoxLayout()
                 lay_.addWidget(plotlib)
                 # grid.addLayout(lay_, 0,2)
-                grid.addLayout(lay_, 0, 2, 1, 75)
+                grid.addLayout(lay_, 0, 2)
             elif position[0] == 1 and position[1] == 1:
                 lay_ = QVBoxLayout()
                 lay_.addWidget(WidgetCreatingModel())
@@ -211,6 +219,24 @@ class WidgetCreatingModel(QWidget):
         self.lay_m.addWidget(self.widget_m, 0, 0)
 
 
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.widget = QWidget()
+        self.v = QVBoxLayout(self.widget)
+        for i in range(10):
+            w = QWidget()
+            hbox = QHBoxLayout(w)
+            hbox.addWidget(WAddZone())
+            self.v.addWidget(w)
+
+        self.scroll = QScrollArea()
+        self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scroll.setWidgetResizable(True)
+        self.scroll.setWidget(self.widget)
+
+        self.setCentralWidget(self.scroll)
 def main():
     app = QApplication(sys.argv)
     window = Window()
