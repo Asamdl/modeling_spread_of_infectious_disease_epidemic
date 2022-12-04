@@ -13,9 +13,11 @@ import random
 import matplotlib.pyplot as plt
 
 from Widgets.WAddZone import WAddZone
+from Widgets.WCreatingModel import WCreatingModel
 from Widgets.WListZone import WListZone
 from Widgets.WPltBig import WPltBig
 from Widgets.WPltLittle import WPltLittle
+from Widgets.WSetModelParameters import WSetModelParameters
 from Widgets.WZoneConstructor import WZoneConstructor
 
 
@@ -96,7 +98,7 @@ class Window(QWidget):
                 grid.addLayout(lay_, 0, 2)
             elif position[0] == 1 and position[1] == 1:
                 lay_ = QVBoxLayout()
-                lay_.addWidget(WidgetCreatingModel())
+                lay_.addWidget(WCreatingModel())
                 grid.addLayout(lay_, *position)
             else:
                 # label = QLabel(name)
@@ -127,96 +129,10 @@ class widget(QWidget):
         uic.loadUi('test_element.ui', self)
 
 
-class WidgetSetModelParameters(QWidget):
-    def __init__(self, checkbox_states: typing.Dict[str, bool], parent=None):
-        QWidget.__init__(self, parent=parent)
-        layout = QVBoxLayout(self)
-
-        for name, value in checkbox_states.items():
-            if value:
-                # I'm so tired of doing this
-                # Unfinished
-                lay = QHBoxLayout()
-                label = QLabel(name)
-                # label.setAlignment(QtCore.Qt.AlignLeft)
-                sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
-
-                lay.addWidget(label)
-                line_edit = QLineEdit()
-                line_edit.setSizePolicy(sizePolicy)
-                # line_edit.setAlignment(QtCore.Qt.AlignLeft)
-                # line_edit.resize(70, 20)
-                # line_edit.setMaximumSize(QtCore.QSize(16777215, 25))
-                line_edit.setFixedWidth(70)
-                # line_edit.setMaxLength(5)
-                # line_edit.setDisabled(True)
-                lay.addWidget(line_edit)
-                layout.addLayout(lay)
 
 
-class WidgetCreatingModel(QWidget):
-    def __init__(self, parent=None):
-        QWidget.__init__(self, parent=parent)
-        self.stages_names = ["S", "I", "E", "R", "D", "`S"]
-        self.name_of_inactive_stages = ["S", "I"]
-        self.checkbox_states = dict()
-        self.stages_widgets = dict()
-        layout_parent = QVBoxLayout(self)
-        label_widget = QLabel("Создание модели")
-        label_widget.setAlignment(QtCore.Qt.AlignCenter)
-        layout_parent.addWidget(label_widget)
-        layout_child_1 = QHBoxLayout()
 
-        layout_child_1_1 = QVBoxLayout()
-        layout_child_1_1_grid = QGridLayout()
-        layout_child_1_1.addWidget(QLabel("Выбор стадий"))
-        positions = [
-            (0, 0), (0, 1),
-            (1, 0), (1, 1),
-            (2, 0), (2, 1)
-        ]
-        for stage_name, position in zip(self.stages_names, positions):
-            widget_check_box = QCheckBox(stage_name, self)
-            widget_check_box.stateChanged.connect(self.update_info_about_status_of_checkboxes)
-            layout_child_1_1_grid.addWidget(widget_check_box, *position)
-            if stage_name in self.name_of_inactive_stages:
-                widget_check_box.setEnabled(False)
-                widget_check_box.toggle()
-                self.checkbox_states[stage_name] = True
-            else:
-                self.checkbox_states[stage_name] = False
-            self.stages_widgets[stage_name] = widget_check_box
-        layout_child_1_1.addLayout(layout_child_1_1_grid)
-        btn = QPushButton("apply")
-        btn.clicked.connect(self.show_info_about_status_of_checkboxes)
-        layout_child_1_1.setAlignment(Qt.AlignCenter)
-        layout_child_1_1.addWidget(btn)
-        layout_child_1.addLayout(layout_child_1_1)
 
-        layout_child_1_2 = QVBoxLayout()
-        layout_child_1_2.addWidget(QLabel("Устанвка значений"))
-        self.widget_m = WidgetSetModelParameters(self.checkbox_states)
-        self.lay_m = QGridLayout()
-        self.lay_m.addWidget(self.widget_m, 0, 0)
-        layout_child_1_2.addLayout(self.lay_m)
-        layout_child_1_2.addWidget(QPushButton("apply"))
-
-        layout_child_1.addLayout(layout_child_1_2)
-        layout_parent.addLayout(layout_child_1)
-
-    def update_info_about_status_of_checkboxes(self, state):
-        for stage_name, stage_widget in self.stages_widgets.items():
-            self.checkbox_states[stage_name] = True if stage_widget.checkState() == Qt.Checked else False
-
-    def show_info_about_status_of_checkboxes(self):
-        for name, state in self.checkbox_states.items():
-            print(f"{name} = {state}")
-        print()
-        # self.lay_m.deleteLater()
-        self.lay_m.removeWidget(self.widget_m)
-        # self.widget_m.deleteLater()
-        self.widget_m = WidgetSetModelParameters(self.checkbox_states)
-        self.lay_m.addWidget(self.widget_m, 0, 0)
 
 
 class MainWindow(QMainWindow):

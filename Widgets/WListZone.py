@@ -1,14 +1,7 @@
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QWidget, QHBoxLayout, QVBoxLayout, QPushButton, \
-    QLineEdit, QRadioButton, QStackedWidget, QGridLayout, QProgressBar, QSlider, QCheckBox, QFrame, QScrollArea, \
-    QListWidget, QListWidgetItem, QScrollBar
+from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QLineEdit, QListWidget, QListWidgetItem
+from PyQt5.QtCore import QEvent
 
-from Widgets.WAddZone import WAddZone
-from Widgets.WZone import WZone
-from functools import partial
-from PyQt5.QtCore import Qt, QObject, QEvent
-
-from Widgets.WZoneElement import WZoneElement
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtWidgets
 
 
 class WListZone(QWidget):
@@ -50,7 +43,7 @@ class WListZone(QWidget):
         print(item.text())
 
     def eventFilter(self, obj, event):
-        if obj is self.listWidget and event.type() == QtCore.QEvent.ContextMenu:
+        if obj is self.listWidget and event.type() == QEvent.ContextMenu:
             item = self.listWidget.currentItem()
             if item:
                 name = item.text()
@@ -61,7 +54,7 @@ class WListZone(QWidget):
 
     def add_item(self):
         name = f"{self.input_name.text()}"
-        if name not in self.zones_names:
+        if name not in self.zones_names and len(name) > 0:
             self.zones_names[name] = "zod"
             self.listWidget.addItem(QListWidgetItem(name))
         else:
