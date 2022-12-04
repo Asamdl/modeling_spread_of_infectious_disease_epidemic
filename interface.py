@@ -119,31 +119,7 @@ class widget(QWidget):
         uic.loadUi('test_element.ui', self)
 
 
-class WidgetSetModelParameters(QWidget):
-    def __init__(self, checkbox_states: typing.Dict[str, bool], parent=None):
-        QWidget.__init__(self, parent=parent)
-        layout = QVBoxLayout(self)
 
-        for name, value in checkbox_states.items():
-            if value:
-                # I'm so tired of doing this
-                # Unfinished
-                lay = QHBoxLayout()
-                label = QLabel(name)
-                # label.setAlignment(QtCore.Qt.AlignLeft)
-                sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
-
-                lay.addWidget(label)
-                line_edit = QLineEdit()
-                line_edit.setSizePolicy(sizePolicy)
-                # line_edit.setAlignment(QtCore.Qt.AlignLeft)
-                # line_edit.resize(70, 20)
-                # line_edit.setMaximumSize(QtCore.QSize(16777215, 25))
-                line_edit.setFixedWidth(70)
-                # line_edit.setMaxLength(5)
-                # line_edit.setDisabled(True)
-                lay.addWidget(line_edit)
-                layout.addLayout(lay)
 
 
 class WidgetCreatingModel(QWidget):
@@ -184,18 +160,23 @@ class WidgetCreatingModel(QWidget):
         layout_child_1_1.setAlignment(Qt.AlignCenter)
         layout_child_1_1.addWidget(btn)
         layout_child_1.addLayout(layout_child_1_1)
+        
+        
+        chosen_model=self.WidgetSetModelParameters(self.checkbox_states)
+        
+        layout_child_1_2 = uic.loadUi('SIRD`S.ui') #replace with blank
 
-        layout_child_1_2 = QVBoxLayout()
-        layout_child_1_2.addWidget(QLabel("Устанвка значений"))
-        self.widget_m = WidgetSetModelParameters(self.checkbox_states)
-        self.lay_m = QGridLayout()
-        self.lay_m.addWidget(self.widget_m, 0, 0)
-        layout_child_1_2.addLayout(self.lay_m)
-        layout_child_1_2.addWidget(QPushButton("apply"))
 
-        layout_child_1.addLayout(layout_child_1_2)
+        layout_child_1.addWidget(layout_child_1_2)
         layout_parent.addLayout(layout_child_1)
-
+    
+    def WidgetSetModelParameters(self,checkbox_states):
+        mode=[] #too jank?
+        for name, value in checkbox_states.items():
+            if value:
+                mode.append(name)
+        print("".join(mode))
+    
     def update_info_about_status_of_checkboxes(self, state):
         for stage_name, stage_widget in self.stages_widgets.items():
             self.checkbox_states[stage_name] = True if stage_widget.checkState() == Qt.Checked else False
@@ -204,11 +185,8 @@ class WidgetCreatingModel(QWidget):
         for name, state in self.checkbox_states.items():
             print(f"{name} = {state}")
         print()
-        # self.lay_m.deleteLater()
-        self.lay_m.removeWidget(self.widget_m)
-        # self.widget_m.deleteLater()
-        self.widget_m = WidgetSetModelParameters(self.checkbox_states)
-        self.lay_m.addWidget(self.widget_m, 0, 0)
+        chosen_model=self.WidgetSetModelParameters(self.checkbox_states)
+        self.layout_child_1_2= uic.loadUi('SIRD`S.ui') #replace with actual output
 
 
 def main():
