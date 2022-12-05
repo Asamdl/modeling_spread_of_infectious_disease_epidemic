@@ -1,12 +1,12 @@
+import random
+import sys
+
 from PyQt5 import QtCore
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPainter, QBrush, QPen
 from PyQt5.QtWidgets import QApplication, QLabel, QWidget, QVBoxLayout, QPushButton, \
     QGridLayout, QSlider
-import sys
-from PyQt5.QtGui import QPainter, QBrush, QPen
-from PyQt5.QtCore import Qt
-import random
 
-from Widgets.WAddZone import WAddZone
 from Widgets.WCreatingModel import WCreatingModel
 from Widgets.WListZone import WListZone
 from Widgets.WPltBig import WPltBig

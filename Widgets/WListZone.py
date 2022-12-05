@@ -1,7 +1,6 @@
-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QLineEdit, QListWidget, QListWidgetItem
-from PyQt5.QtCore import QEvent, Qt
-
 from PyQt5 import QtWidgets
+from PyQt5.QtCore import QEvent, Qt
+from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QLineEdit, QListWidget, QListWidgetItem
 
 from Widgets.WZoneParameters import WZoneParameters
 from classes.ZoneParameters import CZoneParameters
@@ -28,7 +27,7 @@ class WListZone(QWidget):
         layout_list_zones.addWidget(self.listWidget)
         # self.window_layout.addStretch()
         self.window_layout.addLayout(layout_list_zones)
-        self.zone_parameters = WZoneParameters()
+        self.zone_parameters = WZoneParameters(zones = self.zones)
         self.window_layout.addWidget(self.zone_parameters)
         self.window_layout.setAlignment(Qt.AlignTop)
 
@@ -55,7 +54,9 @@ class WListZone(QWidget):
                 del self.zones[name]
                 self.update_list_widget()
                 print(f'element {name} del')
-                self.zone_parameters.set_name_zone("")
+                if name == self.zone_parameters.widget_for_stage_values.selected_zone.name:
+                    self.zone_parameters.set_name_zone("")
+                self.zone_parameters.update_visual_data_of_zones()
         return super().eventFilter(obj, event)
 
     def add_item(self):
@@ -65,3 +66,4 @@ class WListZone(QWidget):
             self.listWidget.addItem(QListWidgetItem(name))
         else:
             self.input_name.clear()
+        self.zone_parameters.update_visual_data_of_zones()

@@ -1,8 +1,8 @@
 import typing
+from functools import partial
 
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit
-from functools import partial
 
 from classes.ZoneParameters import CZoneParameters
 
@@ -32,6 +32,7 @@ class WSetModelParameters(QWidget):
     def disable_all_elements(self):
         for edit_line in self.edit_lines.values():
             edit_line.setEnabled(False)
+            edit_line.setText("0")
 
     def enable_all_elements(self):
         for edit_line in self.edit_lines.values():
@@ -42,7 +43,6 @@ class WSetModelParameters(QWidget):
         if len(value) > 0:
             if value.isdigit():
                 self.selected_zone.stages_value[line_name_and_edit[0]] = int(value)
-                print(value)
 
     def set_stage_values(self):
         for stage_name, edit_line in self.edit_lines.items():

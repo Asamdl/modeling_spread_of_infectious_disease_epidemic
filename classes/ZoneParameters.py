@@ -3,6 +3,11 @@ class CZoneParameters:
         self.name = name
         self.stages_value = stages_value
         self.set_init_stages()
+        self.connections = dict()
+
+    def set_connection(self, friendly_zone: str, value: float):
+        self.connections[friendly_zone] = value
+
 
     def set_stage_value(self, stage: str, value: int):
         if self.stages_value is None:

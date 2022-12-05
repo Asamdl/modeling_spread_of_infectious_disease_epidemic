@@ -1,7 +1,9 @@
 from PyQt5 import QtCore
-from PyQt5.QtWidgets import QLabel, QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QGridLayout, QCheckBox
 from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QLabel, QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QGridLayout, QCheckBox
+
 from Widgets.WSetModelParameters import WSetModelParameters
+
 
 class WCreatingModel(QWidget):
     def __init__(self, parent=None):
