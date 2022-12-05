@@ -164,7 +164,7 @@ class WidgetCreatingModel(QWidget):
         
         chosen_model=self.WidgetSetModelParameters(self.checkbox_states)
         
-        layout_child_1_2 = uic.loadUi('SIRD`S.ui') #replace with blank
+        layout_child_1_2 = uic.loadUi('SIRD`S dynamic.ui') #replace with blank
 
 
         layout_child_1.addWidget(layout_child_1_2)
