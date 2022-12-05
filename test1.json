@@ -1,0 +1,53 @@
+{
+    "Model_name": "two_office",
+    "Description": "",
+    "Stages": [
+        {
+            "name": "S1",
+            "start_num": "1000"
+        },
+        {
+            "name": "S2",
+            "start_num": "500"
+        }
+    ],
+    "Flows": [
+        {
+            "source": "S1",
+            "sfactor": "0.1",
+            "dfactor": "",
+            "dynamic": false,
+            "dic_target": {
+                "I1": "1"
+            },
+            "induction": true,
+            "dic_ind": {
+                "I1": "1",
+                "I2": "0.01"
+            }
+        },
+        {
+            "source": "I1",
+            "sfactor": "0.01",
+            "dfactor": "",
+            "dynamic": false,
+            "dic_target": {
+                "R1": "1"
+            },
+            "induction": false,
+            "dic_ind": {}
+        }
+    ],
+    "Ow_flows": [],
+    "Dfactors": [],
+    "Settings": {
+        "check_period": 100,
+        "braking_dist": 20,
+        "threshold": 0.0001,
+        "limit_step": "1000",
+        "max_step": 10000,
+        "stop_mode": "a",
+        "divided_n": true
+    },
+    "Associated result files": ""
+}
