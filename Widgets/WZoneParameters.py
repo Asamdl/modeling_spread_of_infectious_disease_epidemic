@@ -40,17 +40,20 @@ class WZoneParameters(QWidget):
         self.disable_all_elements()
 
     def update_visual_data_of_zones(self):
-        self.friendly_zones.clear()
-        for zone_name in self.zones.keys():
-            self.friendly_zones.addItem(zone_name)
+        if self.label_name_zone.text() in self.zones:
+            self.friendly_zones.clear()
+            for zone_name in self.zones[self.label_name_zone.text()].connections.keys():
+                self.friendly_zones.addItem(zone_name)
 
     def set_connection_value(self):
         if self.label_name_zone.text() in self.zones:
             friendly_zone, value, result = DZoneConnection.get_connections_value(
-                list(set(self.zones[self.label_name_zone.text()].connections.keys()).symmetric_difference(
+                list(set(list(self.zones[self.label_name_zone.text()].connections.keys())+
+                         [self.label_name_zone.text()]).symmetric_difference(
                     self.zones.keys())))
             if result:
                 self.zones[self.label_name_zone.text()].set_connection(friendly_zone, value)
+                self.update_visual_data_of_zones()
 
     def print_selected_zone(self, index):
         print(self.friendly_zones.currentText())

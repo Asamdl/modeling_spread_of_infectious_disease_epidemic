@@ -47,3 +47,4 @@ class WSetModelParameters(QWidget):
     def set_stage_values(self):
         for stage_name, edit_line in self.edit_lines.items():
             edit_line.setText(str(self.selected_zone.stages_value[stage_name]))
+

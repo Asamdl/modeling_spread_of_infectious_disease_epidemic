@@ -33,7 +33,8 @@ class DZoneConnection(QDialog):
     @staticmethod
     def get_connections_value(zones, parent=None):
         dialog = DZoneConnection(zones=zones,parent=parent)
+        result = dialog.exec_()
         selected_zone = dialog.zones_combo_box.currentText()
         value = dialog.connection_value.text()
-        result = dialog.exec_()
+
         return selected_zone, value, result == QDialog.Accepted

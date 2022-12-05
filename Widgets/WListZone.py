@@ -44,6 +44,7 @@ class WListZone(QWidget):
         self.zone_parameters.set_name_zone(item.text())
         self.zone_parameters.widget_for_stage_values.selected_zone = self.zones[item.text()]
         self.zone_parameters.widget_for_stage_values.set_stage_values()
+        self.zone_parameters.update_visual_data_of_zones()
         print(item.text())
 
     def eventFilter(self, obj, event):
@@ -56,6 +57,11 @@ class WListZone(QWidget):
                 print(f'element {name} del')
                 if name == self.zone_parameters.widget_for_stage_values.selected_zone.name:
                     self.zone_parameters.set_name_zone("")
+
+                for zone_name,zone_data in self.zones.items():
+                    if name in zone_data.connections:
+                        del zone_data.connections[name]
+
                 self.zone_parameters.update_visual_data_of_zones()
         return super().eventFilter(obj, event)
 
@@ -66,4 +72,3 @@ class WListZone(QWidget):
             self.listWidget.addItem(QListWidgetItem(name))
         else:
             self.input_name.clear()
-        self.zone_parameters.update_visual_data_of_zones()
