@@ -123,6 +123,8 @@ class widget(QWidget):
 
 
 class WidgetCreatingModel(QWidget):
+
+    
     def __init__(self, parent=None):
         QWidget.__init__(self, parent=parent)
         self.stages_names = ["S", "I", "E", "R", "D", "`S"]
@@ -161,21 +163,59 @@ class WidgetCreatingModel(QWidget):
         layout_child_1_1.addWidget(btn)
         layout_child_1.addLayout(layout_child_1_1)
         
+        layout_child_1_2 = uic.loadUi('SEIRD`S.ui') 
+        layout_child_1_2_buttons=layout_child_1_2.findChildren(QPushButton)
         
-        chosen_model=self.WidgetSetModelParameters(self.checkbox_states)
+
+        self.layout_child_1_2_frames=layout_child_1_2.findChildren(QFrame)
         
-        layout_child_1_2 = uic.loadUi('SIRD`S dynamic.ui') #replace with blank
-
-
+        self.WidgetSetModelParameters(self.checkbox_states,self.layout_child_1_2_frames)
+        
+        
+        
+        #for child in layout_child_1_2_children:
+            #child.hide()
+    
         layout_child_1.addWidget(layout_child_1_2)
         layout_parent.addLayout(layout_child_1)
     
-    def WidgetSetModelParameters(self,checkbox_states):
-        mode=[] #too jank?
-        for name, value in checkbox_states.items():
-            if value:
-                mode.append(name)
-        print("".join(mode))
+    def WidgetSetModelParameters(self,checkbox_states,layout_frames):
+        frames_of_interest={
+            "S":"S_frame",
+            "I":"I_solo_frame",
+            "E":"E_frame",
+            "R":"R_frame",
+            "D":"ID_frame",
+            "`S":"newS_frame"}
+        layout_frames_names=[]
+        for frame in layout_frames:
+            layout_frames_names.append(frame.objectName())
+        
+        #ugly? maybe. works? yes.
+        if (checkbox_states['E']):
+            layout_frames[layout_frames_names.index("beta_frame")].show()
+            layout_frames[layout_frames_names.index("E_frame")].show()
+        else:
+            layout_frames[layout_frames_names.index("beta_frame")].hide()
+            layout_frames[layout_frames_names.index("E_frame")].hide()
+        if (checkbox_states['R']): 
+            layout_frames[layout_frames_names.index("xi_frame")].show()
+            layout_frames[layout_frames_names.index("R_frame")].show()
+        else:
+            layout_frames[layout_frames_names.index("xi_frame")].hide()
+            layout_frames[layout_frames_names.index("R_frame")].hide()
+        if (checkbox_states['D']): 
+            layout_frames[layout_frames_names.index("ID_frame")].show()
+            layout_frames[layout_frames_names.index("I_solo_frame")].hide()
+        else:
+            layout_frames[layout_frames_names.index("ID_frame")].hide()
+            layout_frames[layout_frames_names.index("I_solo_frame")].show()
+        if (checkbox_states['`S']): 
+            layout_frames[layout_frames_names.index("idk_frame")].show() #я не ебу какие эти греческие буковы. надо поменять и в дизайнере и здесь
+            layout_frames[layout_frames_names.index("newS_frame")].show()
+        else:
+            layout_frames[layout_frames_names.index("idk_frame")].hide()
+            layout_frames[layout_frames_names.index("newS_frame")].hide()
     
     def update_info_about_status_of_checkboxes(self, state):
         for stage_name, stage_widget in self.stages_widgets.items():
@@ -185,8 +225,8 @@ class WidgetCreatingModel(QWidget):
         for name, state in self.checkbox_states.items():
             print(f"{name} = {state}")
         print()
-        chosen_model=self.WidgetSetModelParameters(self.checkbox_states)
-        self.layout_child_1_2= uic.loadUi('SIRD`S.ui') #replace with actual output
+        self.WidgetSetModelParameters(self.checkbox_states, self.layout_child_1_2_frames)
+        
 
 
 def main():
