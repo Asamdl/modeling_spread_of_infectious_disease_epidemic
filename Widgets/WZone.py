@@ -1,7 +1,6 @@
-from PyQt5.QtWidgets import QLabel, QWidget, QHBoxLayout, QVBoxLayout, QPushButton
-from Widgets.WPainter import WPainter
 import uuid
 
+from PyQt5.QtWidgets import QLabel, QWidget, QHBoxLayout, QVBoxLayout, QPushButton
 
 from Widgets.WPltLittle import WPltLittle
 

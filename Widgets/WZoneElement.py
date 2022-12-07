@@ -1,9 +1,6 @@
-from PyQt5.QtWidgets import QLabel, QWidget, QHBoxLayout, QVBoxLayout, QPushButton
-from Widgets.WPainter import WPainter
 import uuid
 
-
-from Widgets.WPltLittle import WPltLittle
+from PyQt5.QtWidgets import QLabel, QWidget, QHBoxLayout, QVBoxLayout, QPushButton
 
 
 class WZoneElement(QWidget):
