@@ -2,10 +2,8 @@ import uuid
 
 from PyQt5.QtWidgets import QLabel, QWidget, QHBoxLayout, QVBoxLayout, QPushButton
 
-from Widgets.WPltLittle import WPltLittle
 
-
-class WZone(QWidget):
+class WZoneElement(QWidget):
     def __init__(self, name):
         super().__init__()
         self.lay = QVBoxLayout(self)
@@ -14,11 +12,11 @@ class WZone(QWidget):
         self.id = str(uuid.uuid4())
         self.label_name = QLabel(self.name)
         lay_.addWidget(self.label_name)
-        self.btn_del = QPushButton("del")
-        lay_.addWidget(self.btn_del)
+        self.parameters = QPushButton("Параметры")
+        lay_.addWidget(self.parameters)
+        self.connections = QPushButton("Связи")
+        lay_.addWidget(self.connections)
         self.lay.addLayout(lay_)
-        #self.lay.addWidget(WPainter())
-        self.lay.addWidget(WPltLittle())
 
     def set_name(self, name):
         self.name = str(name)

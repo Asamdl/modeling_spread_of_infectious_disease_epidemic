@@ -1,5 +1,4 @@
 import json
-from classes import *
 
 
 def create_json_file(data: dict, name_file: str = "file", path_to_directory: str = ""):

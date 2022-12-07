@@ -1,19 +1,15 @@
-import typing
-
-from PyQt5 import QtGui, QtCore, QtWidgets, uic
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QWidget, QHBoxLayout, QVBoxLayout, QPushButton, \
-    QLineEdit, QRadioButton, QStackedWidget, QGridLayout, QProgressBar, QSlider, QCheckBox, QFrame
-import sys
-from PyQt5.QtGui import QPainter, QBrush, QPen, QColor
-from PyQt5.QtCore import Qt, QObject, QEvent
-from PyQt5.uic import loadUi
-from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import random
-import matplotlib.pyplot as plt
+import sys
 
+from PyQt5 import QtCore
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPainter, QBrush, QPen
+from PyQt5.QtWidgets import QApplication, QLabel, QWidget, QVBoxLayout, QPushButton, \
+    QGridLayout, QSlider
+
+from Widgets.WCreatingModel import WCreatingModel
+from Widgets.WListZone import WListZone
 from Widgets.WPltBig import WPltBig
-from Widgets.WZoneConstructor import WZoneConstructor
 
 
 class box(QWidget):
@@ -21,10 +17,6 @@ class box(QWidget):
         super().__init__()
         self.name = name
         self.colors = [Qt.red, Qt.black, Qt.white, Qt.yellow]
-        self.InitWindow()
-
-    def InitWindow(self):
-        self.show()
 
     def keyPressEvent(self, e):
         if e.key() == Qt.Key_:
@@ -54,7 +46,7 @@ class Window(QWidget):
         self.title = "PyQt5"
         self.top = 50
         self.left = 50
-        self.width = 1000
+        self.width = 1200
         self.height = 650
         grid = QGridLayout()
         self.setLayout(grid)
@@ -65,35 +57,35 @@ class Window(QWidget):
             (1, 1, 1, 1),
             (1, 2, 1, 1)
         ]
-        # row: int, column: int, rowSpan: int, columnSpan: int
         for position in positions:
             if position[0] == 0 and position[1] == 0:
                 lay00 = QVBoxLayout()
+                lay00.addStretch()
                 lay_ = QGridLayout()
                 label = QLabel("Создание зон")
                 label.setAlignment(QtCore.Qt.AlignCenter)
-                lay_.addWidget(label, 0, 0)
-                lay_.addWidget(WZoneConstructor(), 1, 0, 100, 1)
+                lay00.addWidget(label)
+                lay00.addWidget(WListZone())
 
-                lay00.addLayout(lay_)
+                lay00.addStretch()
                 slider = QSlider(Qt.Horizontal)
                 slider.valueChanged.connect(self.update_color_for_zones)
+                lay00.setAlignment(Qt.AlignmentFlag.AlignTop)
                 lay00.addWidget(slider)
+
+                grid.setAlignment(Qt.AlignmentFlag.AlignTop)
                 grid.addLayout(lay00, *position)
             elif position[0] == 0 and position[1] == 2:
                 plotlib = WPltBig()
                 lay_ = QVBoxLayout()
                 lay_.addWidget(plotlib)
-                # grid.addLayout(lay_, 0,2)
-                grid.addLayout(lay_, 0, 2, 1, 75)
+                grid.addLayout(lay_, 0, 2)
             elif position[0] == 1 and position[1] == 1:
                 lay_ = QVBoxLayout()
-                lay_.addWidget(WidgetCreatingModel())
+                lay_.addWidget(WCreatingModel())
                 grid.addLayout(lay_, *position)
             else:
-                # label = QLabel(name)
                 widget = Widget1()
-                # label.setStyleSheet('QLabel {background-color: #A3C1DA; color: red;}')
                 grid.addWidget(widget, *position)
         self.InitWindow()
 
@@ -111,6 +103,7 @@ class Widget1(QWidget):
         lay = QVBoxLayout(self)
         for i in range(4):
             lay.addWidget(QPushButton("{}".format(i)))
+
 
 
 class widget(QWidget):
@@ -227,7 +220,6 @@ class WidgetCreatingModel(QWidget):
         print()
         self.WidgetSetModelParameters(self.checkbox_states, self.layout_child_1_2_frames)
         
-
 
 def main():
     app = QApplication(sys.argv)

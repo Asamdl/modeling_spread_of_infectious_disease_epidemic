@@ -1,8 +1,8 @@
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QWidget, QHBoxLayout, QVBoxLayout, QPushButton, \
-    QLineEdit, QRadioButton, QStackedWidget, QGridLayout, QProgressBar, QSlider, QCheckBox, QFrame
-from PyQt5.QtCore import Qt, QObject, QEvent
-from PyQt5.QtGui import QPainter, QBrush, QPen, QColor
 import random
+
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPainter, QBrush, QPen
+from PyQt5.QtWidgets import QWidget
 
 
 class WPainter(QWidget):

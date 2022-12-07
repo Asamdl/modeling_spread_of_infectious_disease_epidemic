@@ -1,9 +1,9 @@
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QWidget, QHBoxLayout, QVBoxLayout, QPushButton, \
-    QLineEdit, QRadioButton, QStackedWidget, QGridLayout, QProgressBar, QSlider, QCheckBox, QFrame
+from functools import partial
+
+from PyQt5.QtWidgets import QWidget, QGridLayout
 
 from Widgets.WAddZone import WAddZone
 from Widgets.WZone import WZone
-from functools import partial
 
 
 class WZoneConstructor(QWidget):

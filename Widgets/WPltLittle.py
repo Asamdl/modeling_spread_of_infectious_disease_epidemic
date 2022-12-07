@@ -1,8 +1,9 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton
-from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import random
+
 import matplotlib.pyplot as plt
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
 
 class WPltLittle(QWidget):
@@ -19,7 +20,7 @@ class WPltLittle(QWidget):
 
         self.button.clicked.connect(self.plot)
         layout = QVBoxLayout()
-        layout.addWidget(self.toolbar)
+        #layout.addWidget(self.toolbar)
         layout.addWidget(self.canvas)
         layout.addWidget(self.button)
         self.setLayout(layout)
