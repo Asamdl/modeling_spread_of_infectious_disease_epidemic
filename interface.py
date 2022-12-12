@@ -5,7 +5,7 @@ from PyQt5 import QtCore, uic
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPainter, QBrush, QPen
 from PyQt5.QtWidgets import QApplication, QLabel, QWidget, QVBoxLayout, QPushButton, \
-    QGridLayout, QSlider, QHBoxLayout, QCheckBox, QFrame
+    QGridLayout, QSlider, QHBoxLayout, QCheckBox, QFrame, QInputDialog
 
 from Widgets.WCreatingModel import WCreatingModel
 from Widgets.WListZone import WListZone
@@ -150,11 +150,20 @@ class WidgetCreatingModel(QWidget):
         layout_child_1.addLayout(layout_child_1_1)
         layout_child_1_2 = uic.loadUi('SEIRD`S.ui')
         self.layout_child_1_2_frames = layout_child_1_2.findChildren(QFrame)
+        self.layout_child_1_2_buttons = layout_child_1_2.findChildren(QPushButton)
+        
+        
+        for button in self.layout_child_1_2_buttons:
+            button.clicked.connect(lambda state, x=button.text(): self.ModelParametersDialog(x))
+        
         self.WidgetSetModelParameters(self.checkbox_states, self.layout_child_1_2_frames)
         layout_child_1.addWidget(layout_child_1_2)
         layout_parent.addLayout(layout_child_1)
 
-    def WidgetSetModelParameters(self, checkbox_states, layout_frames):
+    def ModelParametersDialog(self, button_text):
+        inputted_value, done = QInputDialog.getDouble(self, f'{button_text}', 'Введите параметр:')
+    
+    def WidgetSetModelParameters(self, checkbox_states, layout_frames):  
         frames_of_interest = {
             "S": "S_frame",
             "I": "I_solo_frame",
