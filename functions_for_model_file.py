@@ -1,5 +1,7 @@
 import json
 
+from classes.classes import Model, Stage, Flow, DictStage
+
 
 def create_json_file(data: dict, name_file: str = "file", path_to_directory: str = ""):
     if len(name_file) > 0:

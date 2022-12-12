@@ -34,10 +34,23 @@ class WZoneParameters(QWidget):
         btn_add_friendly_zone.setFixedWidth(25)
         btn_add_friendly_zone.clicked.connect(self.set_connection_value)
         layout_friendly_zones.addWidget(btn_add_friendly_zone)
+
+        btn_del_friendly_zone = QPushButton("-")
+        btn_del_friendly_zone.setFixedWidth(25)
+        btn_del_friendly_zone.clicked.connect(self.remove_connection)
+        layout_friendly_zones.addWidget(btn_del_friendly_zone)
+
         layout_self.addLayout(layout_friendly_zones)
         self.update_visual_data_of_zones()
         layout_self.setAlignment(Qt.AlignTop)
         self.disable_all_elements()
+
+    def remove_connection(self):
+        for zone_name, zone_data in self.zones.items():
+            if self.friendly_zones.currentText() in zone_data.connections:
+                del zone_data.connections[self.friendly_zones.currentText()]
+
+        self.update_visual_data_of_zones()
 
     def update_visual_data_of_zones(self):
         if self.label_name_zone.text() in self.zones:
