@@ -54,7 +54,6 @@ class WZoneParameters(QWidget):
 
         layout_self.addLayout(layout_value_connection)
 
-
         layout_self.setAlignment(Qt.AlignTop)
         self.disable_all_elements()
 
@@ -74,10 +73,10 @@ class WZoneParameters(QWidget):
     def set_connection_value(self):
         if self.label_name_zone.text() in self.zones:
             friendly_zone, value, result = DZoneConnection.get_connections_value(
-                list(set(list(self.zones[self.label_name_zone.text()].connections.keys())+
+                list(set(list(self.zones[self.label_name_zone.text()].connections.keys()) +
                          [self.label_name_zone.text()]).symmetric_difference(
                     self.zones.keys())))
-            if result:
+            if result and len(friendly_zone) > 0:
                 self.zones[self.label_name_zone.text()].set_connection(friendly_zone, value)
                 self.update_visual_data_of_zones()
 
