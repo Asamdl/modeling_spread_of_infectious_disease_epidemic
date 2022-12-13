@@ -61,6 +61,10 @@ class WZoneParameters(QWidget):
         layout_self.setAlignment(Qt.AlignTop)
         self.disable_all_elements()
 
+    def update_visual_connection_value(self):
+        self.line_edit_value_connection.setText("")
+        self.show_value_of_connection(self.friendly_zones.currentText())
+
     def update_connection_value(self, value):
         friendly_zone_name = self.friendly_zones.currentText()
         if len(value) > 0 and len(friendly_zone_name) > 0:

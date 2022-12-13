@@ -44,6 +44,7 @@ class WListZone(QWidget):
         self.zone_parameters.widget_for_stage_values.selected_zone = self.zones[item.text()]
         self.zone_parameters.widget_for_stage_values.set_stage_values()
         self.zone_parameters.update_visual_data_of_zones()
+        self.zone_parameters.update_visual_connection_value()
         print(item.text())
 
     def eventFilter(self, obj, event):
