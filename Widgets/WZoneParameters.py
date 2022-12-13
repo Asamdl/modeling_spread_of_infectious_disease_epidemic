@@ -1,6 +1,6 @@
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QLabel, QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QComboBox
-
+from PyQt5.QtWidgets import QLabel, QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QComboBox, QLineEdit
+from PyQt5 import QtWidgets
 from Widgets.DZoneConnection import DZoneConnection
 from Widgets.WSetModelParameters import WSetModelParameters
 from classes import ZoneParameters
@@ -42,6 +42,19 @@ class WZoneParameters(QWidget):
 
         layout_self.addLayout(layout_friendly_zones)
         self.update_visual_data_of_zones()
+
+        layout_value_connection = QVBoxLayout()
+        label = QLabel("Значение")
+        label.setAlignment(Qt.AlignLeft)
+        layout_value_connection.addWidget(label)
+        self.line_edit_value_connection = QLineEdit()
+        size_policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
+        self.line_edit_value_connection.setSizePolicy(size_policy)
+        layout_value_connection.addWidget(self.line_edit_value_connection)
+
+        layout_self.addLayout(layout_value_connection)
+
+
         layout_self.setAlignment(Qt.AlignTop)
         self.disable_all_elements()
 
