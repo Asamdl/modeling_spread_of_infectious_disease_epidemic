@@ -391,7 +391,7 @@
     <widget class="QFrame" name="ID_frame">
      <property name="maximumSize">
       <size>
-       <width>75</width>
+       <width>50</width>
        <height>175</height>
       </size>
      </property>
@@ -402,6 +402,12 @@
       <enum>QFrame::Raised</enum>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
+      <property name="leftMargin">
+       <number>20</number>
+      </property>
+      <property name="topMargin">
+       <number>20</number>
+      </property>
       <item alignment="Qt::AlignLeft|Qt::AlignTop">
        <widget class="QLabel" name="I_label">
         <property name="maximumSize">
@@ -420,8 +426,14 @@
         </property>
        </widget>
       </item>
-      <item>
+      <item alignment="Qt::AlignLeft">
        <widget class="QFrame" name="mu_frame">
+        <property name="minimumSize">
+         <size>
+          <width>42</width>
+          <height>0</height>
+         </size>
+        </property>
         <property name="frameShape">
          <enum>QFrame::StyledPanel</enum>
         </property>
@@ -429,6 +441,15 @@
          <enum>QFrame::Raised</enum>
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout">
+         <property name="spacing">
+          <number>1</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>11</number>
+         </property>
          <item alignment="Qt::AlignLeft">
           <widget class="Line" name="I_D_line">
            <property name="maximumSize">
@@ -442,7 +463,7 @@
            </property>
           </widget>
          </item>
-         <item alignment="Qt::AlignHCenter|Qt::AlignVCenter">
+         <item alignment="Qt::AlignLeft|Qt::AlignVCenter">
           <widget class="QPushButton" name="mu_button">
            <property name="maximumSize">
             <size>
