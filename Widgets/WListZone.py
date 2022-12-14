@@ -25,9 +25,8 @@ class WListZone(QWidget):
         self.listWidget.installEventFilter(self)
         self.listWidget.itemActivated.connect(self.item_activated_event)
         layout_list_zones.addWidget(self.listWidget)
-        # self.window_layout.addStretch()
         self.window_layout.addLayout(layout_list_zones)
-        self.zone_parameters = WZoneParameters(zones = self.zones)
+        self.zone_parameters = WZoneParameters(zones=self.zones)
         self.window_layout.addWidget(self.zone_parameters)
         self.window_layout.setAlignment(Qt.AlignTop)
 
@@ -45,6 +44,7 @@ class WListZone(QWidget):
         self.zone_parameters.widget_for_stage_values.selected_zone = self.zones[item.text()]
         self.zone_parameters.widget_for_stage_values.set_stage_values()
         self.zone_parameters.update_visual_data_of_zones()
+        self.zone_parameters.update_visual_connection_value()
         print(item.text())
 
     def eventFilter(self, obj, event):
@@ -58,7 +58,7 @@ class WListZone(QWidget):
                 if name == self.zone_parameters.widget_for_stage_values.selected_zone.name:
                     self.zone_parameters.set_name_zone("")
 
-                for zone_name,zone_data in self.zones.items():
+                for zone_name, zone_data in self.zones.items():
                     if name in zone_data.connections:
                         del zone_data.connections[name]
 
@@ -70,5 +70,6 @@ class WListZone(QWidget):
         if name not in self.zones and len(name) > 0:
             self.zones[name] = CZoneParameters(name=name)
             self.listWidget.addItem(QListWidgetItem(name))
+            self.input_name.clear()
         else:
             self.input_name.clear()

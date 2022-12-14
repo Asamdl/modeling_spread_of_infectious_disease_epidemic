@@ -1,5 +1,75 @@
 import json
 
+from classes.classes import Model, Stage, Flow, DictStage, Settings
+
+
+def load_file_model(self):
+    try:
+        with open(self.filename, "r", encoding="utf-8-sig") as file:
+            common_dic = json.load(file)
+        filename = self.filename
+        model = Model()
+        list_stage=[]
+        list_dfactor=[]
+        list_flow=[]
+        list_owflow=[]
+        self.take_default()
+        self.filename = filename
+        self.description = common_dic["Description"]
+        self.model_name = common_dic["Model_name"]
+
+        for st in common_dic["Stages"]:
+            list_stage.append(Stage(st['name'], st['start_num']))
+        for df in common_dic["Dfactors"]:
+            pass
+            #list_dfactor.append(DFactorContent(parent_w=self, **df))
+        for fl in common_dic["Flows"]:
+            list_flow.append(Flow(source=fl['source'],
+                                  s_factor=fl['sfactor'],
+                                  d_factor=fl['dfactor'],
+                                  dynamic=fl['dynamic'],
+                                  dic_target=[],
+                                  induction=fl['induction'],
+                                  dic_ind=[]))
+        for ow_fl in common_dic["Ow_flows"]:
+            pass
+            #list_owflow.append(OWFlowContent(list_factor=self.list_dfactor, parent_w=self, **ow_fl))
+        for res in common_dic["Associated result files"]:
+            pass
+            # if not path.exists(res["filename"]):
+            #     msg = self.get_message_text(["Not_exist_result", res["filename"], ""])
+            #     self.show_message(msg, "Warning_save_title")
+            #     logger.warning("Not exist result {0}".format(res["filename"]))
+            # else:
+            #     if not res["filename"] in [r.f_path + r.file_result for r in self.list_result]:
+            #         self.list_result.append(Result(parent_w=self, delimiter=self.user_settings.file_delimiter,
+            #                                        floating_point=self.user_settings.floating_point,
+            #                                        **res))
+            #     else:
+            #         msg = self.get_message_text(["Exist_result", res["filename"], ""])
+            #         self.show_message(msg, "Warning_save_title")
+            #         logger.warning("Exist result {0}".format(res["filename"]))
+            # # self.list_result.append(ResultContent(user_settings=self.user_settings, **res))
+
+        self.settings = Settings(**common_dic["Settings"])
+        self.full_update()
+        self.update_settings_model()
+        self.add_recent_file()
+        self.set_all_enabled(True)
+        self.model_open = True
+        self.full_update()
+
+        return True
+
+    except json.decoder.JSONDecodeError:
+        #logger.debug("json.decoder.JSONDecodeError")
+        info = ["Incorrect_model_file", self.filename, ""]
+        msg = self.get_message_text(info)
+        title = "Warning_title"
+        self.show_message(msg, title)
+
+        return False
+
 
 def create_json_file(data: dict, name_file: str = "file", path_to_directory: str = ""):
     if len(name_file) > 0:
