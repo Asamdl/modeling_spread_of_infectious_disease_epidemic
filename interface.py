@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import QApplication, QLabel, QWidget, QVBoxLayout, QPushBut
 from Widgets.WCreatingModel import WCreatingModel
 from Widgets.WListZone import WListZone
 from Widgets.WPltBig import WPltBig
+from classes.classes import Model, Stage
 
 
 class box(QWidget):
@@ -48,6 +49,9 @@ class Window(QWidget):
         self.left = 50
         self.width = 1200
         self.height = 650
+        self.zones = dict()
+        self.stage_coefficients = dict()
+        self.stages_value = dict()
         grid = QGridLayout()
         self.setLayout(grid)
         positions = [
@@ -64,7 +68,7 @@ class Window(QWidget):
                 label = QLabel("Создание зон")
                 label.setAlignment(QtCore.Qt.AlignCenter)
                 lay00.addWidget(label)
-                lay00.addWidget(WListZone())
+                lay00.addWidget(WListZone(self.zones))
 
                 lay00.addStretch()
                 slider = QSlider(Qt.Horizontal)
@@ -75,17 +79,17 @@ class Window(QWidget):
                 grid.setAlignment(Qt.AlignmentFlag.AlignTop)
                 grid.addLayout(lay00, *position)
             elif position[0] == 0 and position[1] == 1:
-                plotlib = WPltBig()
+                plot_lib = WPltBig()
                 lay_ = QVBoxLayout()
-                lay_.addWidget(plotlib)
+                lay_.addWidget(plot_lib)
                 grid.addLayout(lay_, *position)
             elif position[0] == 1 and position[1] == 0:
                 lay_ = QVBoxLayout()
                 lay_.addWidget(WidgetCreatingModel())
                 grid.addLayout(lay_, *position)
             else:
-                widget = Widget1()
-                grid.addWidget(widget, *position)
+                s_widget = Widget1(stages=self.stages_value, zones=self.zones)
+                grid.addWidget(s_widget, *position)
         self.InitWindow()
 
     def InitWindow(self):
@@ -97,23 +101,41 @@ class Window(QWidget):
 
 
 class Widget1(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, stages, zones, parent=None):
         QWidget.__init__(self, parent=parent)
+        self.stages = stages
+        self.zones = zones
         lay = QVBoxLayout(self)
-        for i in range(4):
-            lay.addWidget(QPushButton("{}".format(i)))
+        btn_start = QPushButton("Start")
+        btn_start.clicked.connect(self.create_model)
+        lay.addWidget(btn_start)
 
+    def create_model(self):
+        is_values_of_the_stages_are_suitable = True
+        is_zone_values_are_suitable = True
+        for stage_value in self.stages.keys():
+            if stage_value == 0:
+                is_values_of_the_stages_are_suitable = False
 
-class widget(QWidget):
-    def __init__(self, parent=None):
-        QWidget.__init__(self, parent=parent)
-        uic.loadUi('test_element.ui', self)
+        if len(self.zones) <= 0:
+            is_zone_values_are_suitable = False
+
+        if is_values_of_the_stages_are_suitable and is_zone_values_are_suitable:
+            Model(model_name="RDDS",
+                  stages=[Stage(stage_name, stage_value) for stage_name, stage_value in self.stages.items()])
+        print(2)
 
 
 class WidgetCreatingModel(QWidget):
     def __init__(self, parent=None):
         QWidget.__init__(self, parent=parent)
+        self.stage_coefficients = dict()
         self.stages_names = ["S", "I", "E", "R", "D", "`S"]
+        self.names_of_the_coefficients_of_the_connections = {("S", "E"): "α",
+                                                             ("E", "I"): "β",
+                                                             ("I", "D"): "γ",
+                                                             ("I", "R"): "δ",
+                                                             ("R", "`S"): "ε"}
         self.name_of_inactive_stages = ["S", "I"]
         self.checkbox_states = dict()
         self.stages_widgets = dict()
@@ -142,35 +164,44 @@ class WidgetCreatingModel(QWidget):
             else:
                 self.checkbox_states[stage_name] = False
             self.stages_widgets[stage_name] = widget_check_box
+            self.update_stage_coefficients()
         layout_child_1_1.addLayout(layout_child_1_1_grid)
         btn = QPushButton("apply")
         btn.clicked.connect(self.show_info_about_status_of_checkboxes)
         layout_child_1_1.setAlignment(Qt.AlignCenter)
         layout_child_1_1.addWidget(btn)
         layout_child_1.addLayout(layout_child_1_1)
-        layout_child_1_2 = uic.loadUi('SEIRD`S.ui')
+        # layout_child_1_2 = uic.loadUi('SEIRD`S.ui')
+        layout_child_1_2 = uic.loadUi('SEIRD`S - Copy.ui')
         self.layout_child_1_2_frames = layout_child_1_2.findChildren(QFrame)
         self.layout_child_1_2_buttons = layout_child_1_2.findChildren(QPushButton)
-        
-        
+
         for button in self.layout_child_1_2_buttons:
             button.clicked.connect(lambda state, x=button.text(): self.ModelParametersDialog(x))
-        
+
         self.WidgetSetModelParameters(self.checkbox_states, self.layout_child_1_2_frames)
         layout_child_1.addWidget(layout_child_1_2)
         layout_parent.addLayout(layout_child_1)
 
+    def update_stage_coefficients(self):
+        names_of_active_coefficients = []
+        for stages_name, name_coefficient in self.names_of_the_coefficients_of_the_connections.items():
+            if stages_name[0] in self.checkbox_states and stages_name[1] in self.checkbox_states:
+                names_of_active_coefficients.append(name_coefficient)
+        for name_coefficient in names_of_active_coefficients:
+            if name_coefficient in self.stage_coefficients:
+                del self.stage_coefficients[name_coefficient]
+            else:
+                self.stage_coefficients[name_coefficient] = 0.0
+
     def ModelParametersDialog(self, button_text):
         inputted_value, done = QInputDialog.getDouble(self, f'{button_text}', 'Введите параметр:')
-    
-    def WidgetSetModelParameters(self, checkbox_states, layout_frames):  
-        frames_of_interest = {
-            "S": "S_frame",
-            "I": "I_solo_frame",
-            "E": "E_frame",
-            "R": "R_frame",
-            "D": "ID_frame",
-            "`S": "newS_frame"}
+        if done:
+            if button_text not in self.stages_value:
+                return Exception
+            self.stages_value[button_text] = inputted_value
+
+    def WidgetSetModelParameters(self, checkbox_states, layout_frames):
         layout_frames_names = []
         for frame in layout_frames:
             layout_frames_names.append(frame.objectName())
@@ -207,9 +238,7 @@ class WidgetCreatingModel(QWidget):
             self.checkbox_states[stage_name] = True if stage_widget.checkState() == Qt.Checked else False
 
     def show_info_about_status_of_checkboxes(self):
-        for name, state in self.checkbox_states.items():
-            print(f"{name} = {state}")
-        print()
+        self.update_stage_coefficients()
         self.WidgetSetModelParameters(self.checkbox_states, self.layout_child_1_2_frames)
 
 

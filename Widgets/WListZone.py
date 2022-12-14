@@ -7,10 +7,10 @@ from classes.ZoneParameters import CZoneParameters
 
 
 class WListZone(QWidget):
-    def __init__(self):
+    def __init__(self,zones):
         super().__init__()
         self.number_of_zones = 0
-        self.zones = dict()
+        self.zones = zones
         self.window_layout = QHBoxLayout(self)
         layout_list_zones = QVBoxLayout()
         layout_add_zone = QHBoxLayout()
