@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1023</width>
-    <height>209</height>
+    <width>815</width>
+    <height>185</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,6 +16,12 @@
   <layout class="QHBoxLayout" name="horizontalLayout_2">
    <item>
     <widget class="QFrame" name="S_frame">
+     <property name="maximumSize">
+      <size>
+       <width>50</width>
+       <height>16777215</height>
+      </size>
+     </property>
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
      </property>
@@ -27,7 +33,7 @@
        <widget class="QLabel" name="S_label">
         <property name="font">
          <font>
-          <pointsize>20</pointsize>
+          <pointsize>14</pointsize>
          </font>
         </property>
         <property name="text">
@@ -72,6 +78,12 @@
    </item>
    <item>
     <widget class="QFrame" name="beta_frame">
+     <property name="maximumSize">
+      <size>
+       <width>50</width>
+       <height>16777215</height>
+      </size>
+     </property>
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
      </property>
@@ -97,6 +109,12 @@
       </item>
       <item alignment="Qt::AlignTop">
        <widget class="Line" name="S_E_line">
+        <property name="maximumSize">
+         <size>
+          <width>50</width>
+          <height>16777215</height>
+         </size>
+        </property>
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
@@ -155,6 +173,12 @@
    </item>
    <item>
     <widget class="QFrame" name="E_frame">
+     <property name="maximumSize">
+      <size>
+       <width>50</width>
+       <height>16777215</height>
+      </size>
+     </property>
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
      </property>
@@ -166,7 +190,7 @@
        <widget class="QLabel" name="E_label">
         <property name="font">
          <font>
-          <pointsize>20</pointsize>
+          <pointsize>14</pointsize>
          </font>
         </property>
         <property name="text">
@@ -214,6 +238,12 @@
      <property name="enabled">
       <bool>true</bool>
      </property>
+     <property name="maximumSize">
+      <size>
+       <width>50</width>
+       <height>16777215</height>
+      </size>
+     </property>
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
      </property>
@@ -239,6 +269,12 @@
       </item>
       <item alignment="Qt::AlignTop">
        <widget class="Line" name="E_I_line">
+        <property name="maximumSize">
+         <size>
+          <width>50</width>
+          <height>16777215</height>
+         </size>
+        </property>
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
@@ -291,6 +327,12 @@
    </item>
    <item>
     <widget class="QFrame" name="I_solo_frame">
+     <property name="maximumSize">
+      <size>
+       <width>50</width>
+       <height>16777215</height>
+      </size>
+     </property>
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
      </property>
@@ -302,7 +344,7 @@
        <widget class="QLabel" name="I_label_solo">
         <property name="font">
          <font>
-          <pointsize>20</pointsize>
+          <pointsize>14</pointsize>
          </font>
         </property>
         <property name="text">
@@ -350,7 +392,7 @@
      <property name="maximumSize">
       <size>
        <width>75</width>
-       <height>16777215</height>
+       <height>175</height>
       </size>
      </property>
      <property name="frameShape">
@@ -362,9 +404,15 @@
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item alignment="Qt::AlignLeft|Qt::AlignTop">
        <widget class="QLabel" name="I_label">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>40</height>
+         </size>
+        </property>
         <property name="font">
          <font>
-          <pointsize>20</pointsize>
+          <pointsize>14</pointsize>
          </font>
         </property>
         <property name="text">
@@ -383,6 +431,12 @@
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item alignment="Qt::AlignLeft">
           <widget class="Line" name="I_D_line">
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>50</height>
+            </size>
+           </property>
            <property name="orientation">
             <enum>Qt::Vertical</enum>
            </property>
@@ -409,9 +463,15 @@
       </item>
       <item alignment="Qt::AlignLeft|Qt::AlignTop">
        <widget class="QLabel" name="D_label">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>40</height>
+         </size>
+        </property>
         <property name="font">
          <font>
-          <pointsize>20</pointsize>
+          <pointsize>14</pointsize>
          </font>
         </property>
         <property name="text">
@@ -440,6 +500,12 @@
    </item>
    <item>
     <widget class="QFrame" name="xi_frame">
+     <property name="maximumSize">
+      <size>
+       <width>50</width>
+       <height>16777215</height>
+      </size>
+     </property>
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
      </property>
@@ -464,7 +530,13 @@
        </widget>
       </item>
       <item alignment="Qt::AlignTop">
-       <widget class="Line" name="line_4">
+       <widget class="Line" name="I_R_line">
+        <property name="maximumSize">
+         <size>
+          <width>50</width>
+          <height>16777215</height>
+         </size>
+        </property>
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
@@ -517,6 +589,12 @@
    </item>
    <item>
     <widget class="QFrame" name="R_frame">
+     <property name="maximumSize">
+      <size>
+       <width>50</width>
+       <height>16777215</height>
+      </size>
+     </property>
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
      </property>
@@ -528,7 +606,7 @@
        <widget class="QLabel" name="R_label">
         <property name="font">
          <font>
-          <pointsize>20</pointsize>
+          <pointsize>14</pointsize>
          </font>
         </property>
         <property name="text">
@@ -573,6 +651,12 @@
    </item>
    <item>
     <widget class="QFrame" name="idk_frame">
+     <property name="maximumSize">
+      <size>
+       <width>50</width>
+       <height>16777215</height>
+      </size>
+     </property>
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
      </property>
@@ -598,6 +682,12 @@
       </item>
       <item alignment="Qt::AlignTop">
        <widget class="Line" name="R_newS_line">
+        <property name="maximumSize">
+         <size>
+          <width>50</width>
+          <height>16777215</height>
+         </size>
+        </property>
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
@@ -650,6 +740,12 @@
    </item>
    <item>
     <widget class="QFrame" name="newS_frame">
+     <property name="maximumSize">
+      <size>
+       <width>50</width>
+       <height>16777215</height>
+      </size>
+     </property>
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
      </property>
@@ -661,7 +757,7 @@
        <widget class="QLabel" name="newS_label">
         <property name="font">
          <font>
-          <pointsize>20</pointsize>
+          <pointsize>14</pointsize>
          </font>
         </property>
         <property name="text">
