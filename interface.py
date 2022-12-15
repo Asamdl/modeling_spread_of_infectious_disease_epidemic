@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import QApplication, QLabel, QWidget, QVBoxLayout, QPushBut
 from Widgets.WCreatingModel import WCreatingModel
 from Widgets.WListZone import WListZone
 from Widgets.WPltBig import WPltBig
+from classes.ZoneParameters import CZoneParameters
 from classes.classes import Model, Stage
 
 
@@ -85,10 +86,10 @@ class Window(QWidget):
                 grid.addLayout(lay_, *position)
             elif position[0] == 1 and position[1] == 0:
                 lay_ = QVBoxLayout()
-                lay_.addWidget(WidgetCreatingModel())
+                lay_.addWidget(WidgetCreatingModel(stage_coefficients=self.stage_coefficients))
                 grid.addLayout(lay_, *position)
             else:
-                s_widget = Widget1(stages=self.stages_value, zones=self.zones)
+                s_widget = Widget1(stage_coefficients=self.stage_coefficients, zones=self.zones)
                 grid.addWidget(s_widget, *position)
         self.InitWindow()
 
@@ -101,35 +102,52 @@ class Window(QWidget):
 
 
 class Widget1(QWidget):
-    def __init__(self, stages, zones, parent=None):
+    def __init__(self, stage_coefficients, zones: dict, parent=None):
         QWidget.__init__(self, parent=parent)
-        self.stages = stages
+        self.stage_coefficients = stage_coefficients
         self.zones = zones
         lay = QVBoxLayout(self)
         btn_start = QPushButton("Start")
         btn_start.clicked.connect(self.create_model)
         lay.addWidget(btn_start)
 
+    def get_stage_list(self):
+        stages_of_zones = []
+        number_of_stages = len(self.stage_coefficients) + 1
+        num_zone = 0
+        for zone in self.zones.values():
+            stages = []
+            for stage_name, stage_value in zone.stages_value.items():
+                stages.append(Stage(f"{stage_name}{num_zone + 1}", str(stage_value)))
+            stages_of_zones.append(stages)
+            num_zone += 1
+        result_list_stages = []
+        for num_stage in range(number_of_stages):
+            for num_zone in range(len(self.zones)):
+                result_list_stages.append(stages_of_zones[num_zone][num_stage])
+        return result_list_stages
+
     def create_model(self):
         is_values_of_the_stages_are_suitable = True
         is_zone_values_are_suitable = True
-        for stage_value in self.stages.keys():
-            if stage_value == 0:
+        for stage_coefficient_value in self.stage_coefficients.keys():
+            if stage_coefficient_value == 0:
                 is_values_of_the_stages_are_suitable = False
 
         if len(self.zones) <= 0:
             is_zone_values_are_suitable = False
 
         if is_values_of_the_stages_are_suitable and is_zone_values_are_suitable:
+            stages = self.get_stage_list()
             Model(model_name="RDDS",
-                  stages=[Stage(stage_name, stage_value) for stage_name, stage_value in self.stages.items()])
+                  stages=self.get_stage_list())
         print(2)
 
 
 class WidgetCreatingModel(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, stage_coefficients, parent=None):
         QWidget.__init__(self, parent=parent)
-        self.stage_coefficients = dict()
+        self.stage_coefficients = stage_coefficients
         self.stages_names = ["S", "I", "E", "R", "D", "`S"]
         self.names_of_the_coefficients_of_the_connections = {("S", "E"): ("α", 0),
                                                              ("E", "I"): ("β", 0),
