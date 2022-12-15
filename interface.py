@@ -12,6 +12,7 @@ from Widgets.WListZone import WListZone
 from Widgets.WPltBig import WPltBig
 from classes.ZoneParameters import CZoneParameters
 from classes.classes import Model, Stage
+from functions_for_model_file import create_json_file, convert_model_to_json
 
 
 class box(QWidget):
@@ -86,7 +87,7 @@ class Window(QWidget):
                 grid.addLayout(lay_, *position)
             elif position[0] == 1 and position[1] == 0:
                 lay_ = QVBoxLayout()
-                lay_.addWidget(WidgetCreatingModel(stage_coefficients=self.stage_coefficients))
+                lay_.addWidget(WidgetCreatingModel(zones=self.zones, stage_coefficients=self.stage_coefficients))
                 grid.addLayout(lay_, *position)
             else:
                 s_widget = Widget1(stage_coefficients=self.stage_coefficients, zones=self.zones)
@@ -138,15 +139,17 @@ class Widget1(QWidget):
             is_zone_values_are_suitable = False
 
         if is_values_of_the_stages_are_suitable and is_zone_values_are_suitable:
-            stages = self.get_stage_list()
-            Model(model_name="RDDS",
-                  stages=self.get_stage_list())
+            model = Model(model_name="RDDS",
+                          stages=self.get_stage_list())
+            data = convert_model_to_json(model=model)
+            create_json_file(data, "post")
         print(2)
 
 
 class WidgetCreatingModel(QWidget):
-    def __init__(self, stage_coefficients, parent=None):
+    def __init__(self, zones, stage_coefficients, parent=None):
         QWidget.__init__(self, parent=parent)
+        self.zones = zones
         self.stage_coefficients = stage_coefficients
         self.stages_names = ["S", "I", "E", "R", "D", "`S"]
         self.names_of_the_coefficients_of_the_connections = {("S", "E"): ("α", 0),
@@ -206,9 +209,20 @@ class WidgetCreatingModel(QWidget):
     def update_stage_coefficients(self):
         names_of_active_coefficients = []
         names_of_active_stages = []
+        self.name_of_inactive_stages = []
         for stage_name, stage_value in self.checkbox_states.items():
             if stage_value:
                 names_of_active_stages.append(stage_name)
+                if stage_name not in self.name_of_inactive_stages:
+                    for zone in self.zones.values():
+                        zone.stages_value[stage_name] = str(0)
+                    self.name_of_inactive_stages.append(stage_name)
+            else:
+                if stage_name in self.name_of_inactive_stages:
+                    for zone in self.zones.values():
+                        del zone.stages_value[stage_name]
+                    self.name_of_inactive_stages.remove(stage_name)
+
         for stages_name, name_coefficient in self.names_of_the_coefficients_of_the_connections.items():
             if stages_name[0] in names_of_active_stages and \
                     stages_name[1] in names_of_active_stages and name_coefficient:
