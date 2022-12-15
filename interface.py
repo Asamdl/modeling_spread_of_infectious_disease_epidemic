@@ -192,7 +192,7 @@ class WidgetCreatingModel(QWidget):
             if stage_value:
                 names_of_active_stages.append(stage_name)
         for stages_name, name_coefficient in self.names_of_the_coefficients_of_the_connections.items():
-            if stages_name[0] in names_of_active_stages and\
+            if stages_name[0] in names_of_active_stages and \
                     stages_name[1] in names_of_active_stages and name_coefficient:
                 post = True
                 for n in names_of_active_coefficients:
@@ -216,9 +216,16 @@ class WidgetCreatingModel(QWidget):
     def ModelParametersDialog(self, button_text):
         inputted_value, done = QInputDialog.getDouble(self, f'{button_text}', 'Введите параметр:')
         if done:
-            if button_text not in self.stages_value:
-                return Exception
-            self.stages_value[button_text] = inputted_value
+            post = False
+            num = 0
+            for name_coefficient in self.stage_coefficients.keys():
+                if name_coefficient[0] == button_text:
+                    post = True
+                    num = name_coefficient[1]
+                    break
+            if post:
+                self.stage_coefficients[(button_text, num)] = inputted_value
+                print(self.stage_coefficients[(button_text, num)])
 
     def WidgetSetModelParameters(self, checkbox_states, layout_frames):
         layout_frames_names = []
