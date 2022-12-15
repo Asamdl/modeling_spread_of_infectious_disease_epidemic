@@ -131,11 +131,13 @@ class WidgetCreatingModel(QWidget):
         QWidget.__init__(self, parent=parent)
         self.stage_coefficients = dict()
         self.stages_names = ["S", "I", "E", "R", "D", "`S"]
-        self.names_of_the_coefficients_of_the_connections = {("S", "E"): "α",
-                                                             ("E", "I"): "β",
-                                                             ("I", "D"): "γ",
-                                                             ("I", "R"): "δ",
-                                                             ("R", "`S"): "ε"}
+        self.names_of_the_coefficients_of_the_connections = {("S", "E"): ("α", 0),
+                                                             ("E", "I"): ("β", 0),
+                                                             ("I", "D"): ("γ", 0),
+                                                             ("I", "R"): ("δ", 0),
+                                                             ("R", "`S"): ("ε", 0),
+                                                             ("S", "I"): ("β", 1),
+                                                             ("I", "`S"): ("ε", 1)}
         self.name_of_inactive_stages = ["S", "I"]
         self.checkbox_states = dict()
         self.stages_widgets = dict()
@@ -164,7 +166,7 @@ class WidgetCreatingModel(QWidget):
             else:
                 self.checkbox_states[stage_name] = False
             self.stages_widgets[stage_name] = widget_check_box
-            self.update_stage_coefficients()
+        self.update_stage_coefficients()
         layout_child_1_1.addLayout(layout_child_1_1_grid)
         btn = QPushButton("apply")
         btn.clicked.connect(self.show_info_about_status_of_checkboxes)
@@ -185,14 +187,27 @@ class WidgetCreatingModel(QWidget):
 
     def update_stage_coefficients(self):
         names_of_active_coefficients = []
+        names_of_active_stages = []
+        for stage_name, stage_value in self.checkbox_states.items():
+            if stage_value:
+                names_of_active_stages.append(stage_name)
         for stages_name, name_coefficient in self.names_of_the_coefficients_of_the_connections.items():
-            if stages_name[0] in self.checkbox_states and stages_name[1] in self.checkbox_states:
-                names_of_active_coefficients.append(name_coefficient)
+            if stages_name[0] in names_of_active_stages and\
+                    stages_name[1] in names_of_active_stages and name_coefficient:
+                post = True
+                for n in names_of_active_coefficients:
+                    if n[0] == name_coefficient[0]:
+                        if name_coefficient[1] == 0:
+                            n[1] = 0
+                        post = False
+                if post:
+                    names_of_active_coefficients.append(name_coefficient)
         for name_coefficient in names_of_active_coefficients:
             if name_coefficient in self.stage_coefficients:
                 del self.stage_coefficients[name_coefficient]
             else:
                 self.stage_coefficients[name_coefficient] = 0.0
+        print(names_of_active_coefficients)
 
     def ModelParametersDialog(self, button_text):
         inputted_value, done = QInputDialog.getDouble(self, f'{button_text}', 'Введите параметр:')
