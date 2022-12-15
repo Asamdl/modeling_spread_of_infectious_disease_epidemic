@@ -202,10 +202,14 @@ class WidgetCreatingModel(QWidget):
                         post = False
                 if post:
                     names_of_active_coefficients.append(name_coefficient)
+        free_coefficients = []
+        for name_coefficient in self.stage_coefficients.keys():
+            if name_coefficient not in names_of_active_coefficients:
+                free_coefficients.append(name_coefficient)
+        for name_coefficient in free_coefficients:
+            del self.stage_coefficients[name_coefficient]
         for name_coefficient in names_of_active_coefficients:
-            if name_coefficient in self.stage_coefficients:
-                del self.stage_coefficients[name_coefficient]
-            else:
+            if name_coefficient not in self.stage_coefficients:
                 self.stage_coefficients[name_coefficient] = 0.0
         print(names_of_active_coefficients)
 
