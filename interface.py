@@ -11,8 +11,20 @@ from Widgets.WCreatingModel import WCreatingModel
 from Widgets.WListZone import WListZone
 from Widgets.WPltBig import WPltBig
 from classes.ZoneParameters import CZoneParameters
-from classes.classes import Model, Stage
+from classes.classes import Model, Stage, Flow, DictStage
 from functions_for_model_file import create_json_file, convert_model_to_json
+
+
+names_of_the_coefficients_of_the_connections = {("S", "E"): ("α", 0),
+                                                             ("E", "I"): ("β", 0),
+                                                             ("I", "D"): ("γ", 0),
+                                                             ("I", "R"): ("δ", 0),
+                                                             ("R", "`S"): ("ε", 0),
+                                                             ("S", "I"): ("β", 1),
+                                                             ("I", "`S"): ("ε", 1)}
+names_of_the_coefficients_of_the_connections_reverse = dict()
+for n1, n2 in names_of_the_coefficients_of_the_connections.items():
+    names_of_the_coefficients_of_the_connections_reverse[n2] = n1
 
 
 class box(QWidget):
@@ -112,6 +124,20 @@ class Widget1(QWidget):
         btn_start.clicked.connect(self.create_model)
         lay.addWidget(btn_start)
 
+    def get_flows_list(self):
+        flows = []
+        for stage_name, stage_coefficient in self.stage_coefficients.items():
+            current_stages = names_of_the_coefficients_of_the_connections_reverse[stage_name]
+            flow = Flow(source=current_stages[0],
+                        s_factor=stage_coefficient,
+                        d_factor="",
+                        dynamic=False,
+                        dic_target=[DictStage(stage_name=current_stages[1], value="1")],
+                        induction=True if "S" in current_stages[0] else False,
+                        dic_ind=[DictStage(stage_name="I",value="1")] if "S" in current_stages[0] else None)
+            flows.append(flow)
+        return flows
+
     def get_stage_list(self):
         stages_of_zones = []
         number_of_stages = len(self.stage_coefficients) + 1
@@ -119,7 +145,8 @@ class Widget1(QWidget):
         for zone in self.zones.values():
             stages = []
             for stage_name, stage_value in zone.stages_value.items():
-                stages.append(Stage(f"{stage_name}{num_zone + 1}", str(stage_value)))
+                #stages.append(Stage(f"{stage_name}{num_zone + 1}", str(stage_value)))
+                stages.append(Stage(f"{stage_name}", str(stage_value)))
             stages_of_zones.append(stages)
             num_zone += 1
         result_list_stages = []
@@ -140,7 +167,8 @@ class Widget1(QWidget):
 
         if is_values_of_the_stages_are_suitable and is_zone_values_are_suitable:
             model = Model(model_name="RDDS",
-                          stages=self.get_stage_list())
+                          stages=self.get_stage_list(),
+                          flows=self.get_flows_list())
             data = convert_model_to_json(model=model)
             create_json_file(data, "post")
         print(2)
@@ -152,13 +180,7 @@ class WidgetCreatingModel(QWidget):
         self.zones = zones
         self.stage_coefficients = stage_coefficients
         self.stages_names = ["S", "I", "E", "R", "D", "`S"]
-        self.names_of_the_coefficients_of_the_connections = {("S", "E"): ("α", 0),
-                                                             ("E", "I"): ("β", 0),
-                                                             ("I", "D"): ("γ", 0),
-                                                             ("I", "R"): ("δ", 0),
-                                                             ("R", "`S"): ("ε", 0),
-                                                             ("S", "I"): ("β", 1),
-                                                             ("I", "`S"): ("ε", 1)}
+
         self.name_of_inactive_stages = ["S", "I"]
         self.checkbox_states = dict()
         self.stages_widgets = dict()
@@ -223,7 +245,7 @@ class WidgetCreatingModel(QWidget):
                         del zone.stages_value[stage_name]
                     self.name_of_inactive_stages.remove(stage_name)
 
-        for stages_name, name_coefficient in self.names_of_the_coefficients_of_the_connections.items():
+        for stages_name, name_coefficient in names_of_the_coefficients_of_the_connections.items():
             if stages_name[0] in names_of_active_stages and \
                     stages_name[1] in names_of_active_stages and name_coefficient:
                 post = True
