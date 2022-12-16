@@ -1,5 +1,6 @@
 import random
 import sys
+from classes.DatabaseController import Database_Controller
 
 from PyQt5 import QtCore, uic
 from PyQt5.QtCore import Qt
@@ -196,7 +197,7 @@ class WidgetCreatingModel(QWidget):
             layout_frames[layout_frames_names.index("I_solo_frame")].show()
         if checkbox_states['`S']:
             layout_frames[layout_frames_names.index(
-                "idk_frame")].show()  # я не ебу какие эти греческие буковы. надо поменять и в дизайнере и здесь
+                "idk_frame")].show()  # я хз какие эти греческие буковы. надо поменять и в дизайнере и здесь
             layout_frames[layout_frames_names.index("newS_frame")].show()
         else:
             layout_frames[layout_frames_names.index("idk_frame")].hide()
@@ -216,8 +217,12 @@ class WidgetCreatingModel(QWidget):
 def main():
     app = QApplication(sys.argv)
     window = Window()
+    DB_Controller = Database_Controller()
+    DB_Controller.get_zone_links()
+    DB_Controller.get_zone_populations()
     window.show()
     sys.exit(app.exec_())
+
 
 
 if __name__ == '__main__':
