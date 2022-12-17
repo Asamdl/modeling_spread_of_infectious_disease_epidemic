@@ -6,22 +6,22 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPainter, QBrush, QPen
 from PyQt5.QtWidgets import QApplication, QLabel, QWidget, QVBoxLayout, QPushButton, \
     QGridLayout, QSlider, QHBoxLayout, QCheckBox, QFrame, QInputDialog
+from matplotlib import pyplot as plt
 
 from Widgets.WCreatingModel import WCreatingModel
 from Widgets.WListZone import WListZone
 from Widgets.WPltBig import WPltBig
 from classes.ZoneParameters import CZoneParameters
 from classes.classes import Model, Stage, Flow, DictStage
-from functions_for_model_file import create_json_file, convert_model_to_json
-
+from functions_for_model_file import create_json_file, convert_model_to_json, load_file_model
 
 names_of_the_coefficients_of_the_connections = {("S", "E"): ("α", 0),
-                                                             ("E", "I"): ("β", 0),
-                                                             ("I", "D"): ("γ", 0),
-                                                             ("I", "R"): ("δ", 0),
-                                                             ("R", "`S"): ("ε", 0),
-                                                             ("S", "I"): ("β", 1),
-                                                             ("I", "`S"): ("ε", 1)}
+                                                ("E", "I"): ("β", 0),
+                                                ("I", "D"): ("γ", 0),
+                                                ("I", "R"): ("δ", 0),
+                                                ("R", "`S"): ("ε", 0),
+                                                ("S", "I"): ("β", 1),
+                                                ("I", "`S"): ("ε", 1)}
 names_of_the_coefficients_of_the_connections_reverse = dict()
 for n1, n2 in names_of_the_coefficients_of_the_connections.items():
     names_of_the_coefficients_of_the_connections_reverse[n2] = n1
@@ -64,6 +64,7 @@ class Window(QWidget):
         self.width = 1200
         self.height = 650
         self.zones = dict()
+        self.result_model = dict()
         self.stage_coefficients = dict()
         self.stages_value = dict()
         grid = QGridLayout()
@@ -93,7 +94,7 @@ class Window(QWidget):
                 grid.setAlignment(Qt.AlignmentFlag.AlignTop)
                 grid.addLayout(lay00, *position)
             elif position[0] == 0 and position[1] == 1:
-                plot_lib = WPltBig()
+                plot_lib = WPltBig(self.result_model)
                 lay_ = QVBoxLayout()
                 lay_.addWidget(plot_lib)
                 grid.addLayout(lay_, *position)
@@ -102,7 +103,7 @@ class Window(QWidget):
                 lay_.addWidget(WidgetCreatingModel(zones=self.zones, stage_coefficients=self.stage_coefficients))
                 grid.addLayout(lay_, *position)
             else:
-                s_widget = Widget1(stage_coefficients=self.stage_coefficients, zones=self.zones)
+                s_widget = Widget1(stage_coefficients=self.stage_coefficients, zones=self.zones,result_model = self.result_model)
                 grid.addWidget(s_widget, *position)
         self.InitWindow()
 
@@ -115,13 +116,19 @@ class Window(QWidget):
 
 
 class Widget1(QWidget):
-    def __init__(self, stage_coefficients, zones: dict, parent=None):
+    def __init__(self, stage_coefficients, zones: dict,result_model, parent=None):
         QWidget.__init__(self, parent=parent)
         self.stage_coefficients = stage_coefficients
         self.zones = zones
+        self.zone_ = None
+        self.model_run = True
+        self.result_model = result_model
+        self.result_flows = {}
+        self.divided_n = True
+        self.one_way_flows = []
         lay = QVBoxLayout(self)
         btn_start = QPushButton("Start")
-        btn_start.clicked.connect(self.create_model)
+        btn_start.clicked.connect(self.start_model)
         lay.addWidget(btn_start)
 
     def get_flows_list(self):
@@ -134,7 +141,7 @@ class Widget1(QWidget):
                         dynamic=False,
                         dic_target=[DictStage(stage_name=current_stages[1], value="1")],
                         induction=True if "S" in current_stages[0] else False,
-                        dic_ind=[DictStage(stage_name="I",value="1")] if "S" in current_stages[0] else None)
+                        dic_ind=[DictStage(stage_name="I", value="1")] if "S" in current_stages[0] else None)
             flows.append(flow)
         return flows
 
@@ -145,7 +152,7 @@ class Widget1(QWidget):
         for zone in self.zones.values():
             stages = []
             for stage_name, stage_value in zone.stages_value.items():
-                #stages.append(Stage(f"{stage_name}{num_zone + 1}", str(stage_value)))
+                # stages.append(Stage(f"{stage_name}{num_zone + 1}", str(stage_value)))
                 stages.append(Stage(f"{stage_name}", str(stage_value)))
             stages_of_zones.append(stages)
             num_zone += 1
@@ -156,6 +163,7 @@ class Widget1(QWidget):
         return result_list_stages
 
     def create_model(self):
+        load_file_model("post.json")
         is_values_of_the_stages_are_suitable = True
         is_zone_values_are_suitable = True
         for stage_coefficient_value in self.stage_coefficients.keys():
@@ -170,8 +178,65 @@ class Widget1(QWidget):
                           stages=self.get_stage_list(),
                           flows=self.get_flows_list())
             data = convert_model_to_json(model=model)
-            create_json_file(data, "post")
+            #create_json_file(data, "post")
+            #load_file_model("post.json")
         print(2)
+
+    def model_step(self):
+        """
+        Change model state after one step
+        :return: None
+        """
+
+        new_state = dict(self.zone_.stages_value)
+        self.population_size = sum(float(self.zone_.stages_value[st]) for st in self.zone_.stages_value)
+        flows = self.get_flows_list()
+        for fl in flows:
+            change, fl_value = fl.get_change(self.zone_.stages_value, self.population_size, self.step, self.divided_n)
+            self.result_flows[str(fl)].append(fl_value)
+            for st in change:
+                new_state[st] += change[st]
+        for o_w_fl in self.one_way_flows:
+            change = o_w_fl.get_change(self.model_state, self.population_size, self.step)
+            if change == "to_zero":
+                new_state[o_w_fl.stage] = 0
+            else:
+                new_state[o_w_fl.stage] += change
+        # self.model_state = new_state
+        return new_state
+
+
+    def start_model(self):
+        """
+        Starts simulation before the stop rule occurs
+        :param output_file: file to write result of modeling
+        :return:
+        """
+        # запись заголовков в словарь
+        self.result_model["step"] = []
+        self.result_flows["step"] = []
+        self.zone_ = self.zones["1"]
+        for st in self.zone_.stages_value:
+            self.result_model[st] = []
+
+        for fl in self.get_flows_list():
+            self.result_flows[str(fl)] = []
+
+        self.step = 0
+        while self.model_run:
+            new_state = self.model_step()
+            if new_state["S"]<0 or self.step == 1000:
+                self.model_run = False
+
+            # заполнение словаря
+            self.result_model["step"].append(self.step)
+            self.result_flows["step"].append(self.step)
+            for st in self.zone_.stages_value:
+                self.result_model[st].append(self.zone_.stages_value[st])
+
+            self.zone_.stages_value = new_state
+            self.step += 1
+        print("Norm")
 
 
 class WidgetCreatingModel(QWidget):
@@ -237,7 +302,7 @@ class WidgetCreatingModel(QWidget):
                 names_of_active_stages.append(stage_name)
                 if stage_name not in self.name_of_inactive_stages:
                     for zone in self.zones.values():
-                        zone.stages_value[stage_name] = str(0)
+                        zone.stages_value[stage_name] = 0
                     self.name_of_inactive_stages.append(stage_name)
             else:
                 if stage_name in self.name_of_inactive_stages:
