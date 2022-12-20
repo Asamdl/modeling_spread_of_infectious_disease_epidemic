@@ -1,72 +1,141 @@
 import json
 
-from classes.classes import Model, Stage, Flow, DictStage, Settings
+from classes.classes import *
 
 
-def load_file_model(self):
+def load_file_model(filename):
     try:
-        with open(self.filename, "r", encoding="utf-8-sig") as file:
+        with open(filename, "r", encoding="utf-8-sig") as file:
             common_dic = json.load(file)
-        filename = self.filename
-        model = Model()
-        list_stage=[]
-        list_dfactor=[]
-        list_flow=[]
-        list_owflow=[]
-        self.take_default()
-        self.filename = filename
-        self.description = common_dic["Description"]
-        self.model_name = common_dic["Model_name"]
+        list_stage = []
+        list_dfactor = []
+        list_flow = []
+        list_owflow = []
 
         for st in common_dic["Stages"]:
-            list_stage.append(Stage(st['name'], st['start_num']))
+            list_stage.append(Stage(**st))
         for df in common_dic["Dfactors"]:
-            pass
-            #list_dfactor.append(DFactorContent(parent_w=self, **df))
+            list_dfactor.append(DFactor(**df))
         for fl in common_dic["Flows"]:
-            list_flow.append(Flow(source=fl['source'],
-                                  s_factor=fl['sfactor'],
-                                  d_factor=fl['dfactor'],
-                                  dynamic=fl['dynamic'],
-                                  dic_target=[],
-                                  induction=fl['induction'],
-                                  dic_ind=[]))
+            list_flow.append(Flow(**fl))
         for ow_fl in common_dic["Ow_flows"]:
-            pass
-            #list_owflow.append(OWFlowContent(list_factor=self.list_dfactor, parent_w=self, **ow_fl))
-        for res in common_dic["Associated result files"]:
-            pass
-            # if not path.exists(res["filename"]):
-            #     msg = self.get_message_text(["Not_exist_result", res["filename"], ""])
-            #     self.show_message(msg, "Warning_save_title")
-            #     logger.warning("Not exist result {0}".format(res["filename"]))
-            # else:
-            #     if not res["filename"] in [r.f_path + r.file_result for r in self.list_result]:
-            #         self.list_result.append(Result(parent_w=self, delimiter=self.user_settings.file_delimiter,
-            #                                        floating_point=self.user_settings.floating_point,
-            #                                        **res))
-            #     else:
-            #         msg = self.get_message_text(["Exist_result", res["filename"], ""])
-            #         self.show_message(msg, "Warning_save_title")
-            #         logger.warning("Exist result {0}".format(res["filename"]))
-            # # self.list_result.append(ResultContent(user_settings=self.user_settings, **res))
+            list_owflow.append(OWFlow(**ow_fl))
+        print(2)
 
-        self.settings = Settings(**common_dic["Settings"])
-        self.full_update()
-        self.update_settings_model()
-        self.add_recent_file()
-        self.set_all_enabled(True)
-        self.model_open = True
-        self.full_update()
+        check = True
+        info = []
+        element = ""
+        title = "Model_check_title"
+        stages = []
+        flows = []
+        ow_flows = []
+        dfactors = []
+
+        try:
+            element = "Stage"
+            if len(list_stage) < 1:
+                info.append(["Num_stages", "", ""])
+                check = False
+            else:
+                set_stage = set([st.name for st in list_stage])
+                if len(set_stage) < len(list_stage):
+                    info.append(["Identical_stage_name", "", ""])
+                    check = False
+                el_i = 1
+                for st in list_stage:
+                    dis_stage, check_add, info_add = st.get_stage(el_i)
+                    if check_add:
+                        stages.append(dis_stage)
+                    else:
+                        check = False
+                        info += info_add
+                    el_i += 1
+
+                if all(st.num == 0 for st in stages):
+                    info.append(["Zero_start_num", "", ""])
+                    check = False
+        except:
+            pass
+
+        # добавление и проверка потоков
+        #     element = "Flow"
+        #     el_i = 1
+        #     if len(self.list_flow) < 1:
+        #         info.append(["Num_flows", "", ""])
+        #         check = False
+        #     else:
+        #         # сумма коэффициентов для каждой стадии как источника
+        #         source_f_sum = {st.name: 0 for st in self.list_stage}
+        #
+        #         for fl in self.list_flow:
+        #             flow, check_add, info_add = fl.get_flow(el_i)
+        #             if check_add:
+        #                 flows.append(flow)
+        #
+        #                 # добавляет к сумме коэффициентов стадий как источников
+        #                 if not fl.dynamic:
+        #                     source_f_sum[fl.source] += input_to_num(fl.sfactor)
+        #
+        #                 for tar in flow.target:
+        #                     if not tar in [st.name for st in stages]:
+        #                         info.append(["Not_exist_flow_target", el_i, tar])
+        #                         check = False
+        #                 if flow.induction:
+        #                     for ind_s in flow.inducing_stages:
+        #                         if not ind_s in [st.name for st in stages]:
+        #                             info.append(["Not_exist_flow_istage", el_i, ind_s])
+        #                             check = False
+        #             else:
+        #                 check = False
+        #                 info += info_add
+        #             el_i += 1
+        #
+        #         for source in source_f_sum:
+        #             if source_f_sum[source] >= 1 and not self.settings.divided_n:
+        #                 info.append(["Large_sum_factor_stage_as_source", source, ""])
+        #                 logger.warning("Large sum factor stage as source: {}".format(source))
+        #                 check = False
+        #
+        #     # добавление и проверка однонаправленных потоков
+        #     element = "Ow_flow"
+        #     el_i = 1
+        #     for o_fl in self.list_owflow:
+        #         ow_flow, check_add, info_add = o_fl.get_ow_flow(el_i)
+        #         if check_add:
+        #             ow_flows.append(ow_flow)
+        #         else:
+        #             check = False
+        #             info += info_add
+        #         el_i += 1
+        #
+        # except Exception as e:
+        #     msg = traceback.format_exc() + "Last element: {0} No.{1}"
+        #     logger.error(msg.format(element, el_i))
+        #     emsg = ErrorMessage(message=msg.format(element, el_i), parent_w=self)
+        #     emsg.exec_()
+        #     raise SystemExit(1)
+        #
+        # if self.settings.stop_mode == "m":
+        #     check_add, info_add = self.settings.check_limit_step()
+        #     if not check_add:
+        #         check = False
+        #         info += info_add
+        #
+        # if not check:
+        #     message = ""
+        #     for i in info:
+        #         message += self.get_message_text(i) + "\n"
+        #     title = self.lang_parser.get(self.user_settings.language.upper(), title, fallback=title)
+        #     msg_window = Message(message, title, self)
+        #     msg_window.exec_()
+        #     self.model = None
+        # else:
+        #     self.model = EpidemicModel(stages, flows, ow_flows, dict(vars(self.settings)))
 
         return True
 
     except json.decoder.JSONDecodeError:
-        #logger.debug("json.decoder.JSONDecodeError")
-        info = ["Incorrect_model_file", self.filename, ""]
-        msg = self.get_message_text(info)
-        title = "Warning_title"
-        self.show_message(msg, title)
+        pass
 
         return False
 

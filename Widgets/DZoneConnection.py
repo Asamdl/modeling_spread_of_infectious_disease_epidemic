@@ -5,18 +5,14 @@ from PyQt5.QtWidgets import QDialog, QVBoxLayout, QLineEdit, QComboBox, QDialogB
 class DZoneConnection(QDialog):
     def __init__(self, zones, parent=None):
         super(DZoneConnection, self).__init__(parent)
-
+        self.zones = zones
         layout_self = QVBoxLayout(self)
         layout_self.addWidget(QLabel("Создание связи"))
-        self.connection_value = QLineEdit()
         self.zones_combo_box = QComboBox()
-        self.zones = zones
+        self.connection_value = QLineEdit()
         self.update_visual_data_of_zones()
-
         layout_self.addWidget(self.zones_combo_box)
         layout_self.addWidget(self.connection_value)
-
-        # OK and Cancel buttons
         buttons = QDialogButtonBox(
             QDialogButtonBox.Ok | QDialogButtonBox.Cancel,
             Qt.Horizontal, self)
@@ -32,7 +28,7 @@ class DZoneConnection(QDialog):
     # static method to create the dialog and return (date, time, accepted)
     @staticmethod
     def get_connections_value(zones, parent=None):
-        dialog = DZoneConnection(zones=zones,parent=parent)
+        dialog = DZoneConnection(zones=zones, parent=parent)
         result = dialog.exec_()
         selected_zone = dialog.zones_combo_box.currentText()
         value = dialog.connection_value.text()

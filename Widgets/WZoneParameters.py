@@ -80,7 +80,8 @@ class WZoneParameters(QWidget):
         for zone_name, zone_data in self.zones.items():
             if self.friendly_zones.currentText() in zone_data.connections:
                 del zone_data.connections[self.friendly_zones.currentText()]
-
+        del self.zones[self.friendly_zones.currentText()].connections[self.label_name_zone.text()]
+        self.line_edit_value_connection.setText("")
         self.update_visual_data_of_zones()
 
     def update_visual_data_of_zones(self):
@@ -97,6 +98,7 @@ class WZoneParameters(QWidget):
                     self.zones.keys())))
             if result and len(friendly_zone) > 0:
                 self.zones[self.label_name_zone.text()].set_connection(friendly_zone, value)
+                self.zones[friendly_zone].set_connection(self.label_name_zone.text(), value)
                 self.update_visual_data_of_zones()
 
     def print_selected_zone(self, index):
