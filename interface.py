@@ -86,10 +86,10 @@ class Window(QWidget):
                 lay00.addWidget(WListZone(self.zones))
 
                 lay00.addStretch()
-                slider = QSlider(Qt.Horizontal)
-                slider.valueChanged.connect(self.update_color_for_zones)
+                #slider = QSlider(Qt.Horizontal)
+                #slider.valueChanged.connect(self.update_color_for_zones)
                 lay00.setAlignment(Qt.AlignmentFlag.AlignTop)
-                lay00.addWidget(slider)
+                #lay00.addWidget(slider)
 
                 grid.setAlignment(Qt.AlignmentFlag.AlignTop)
                 grid.addLayout(lay00, *position)
